@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="Suspect Search Category"
+            id="com.dforensic.plugin.manal">
+      </category>
+      <view
+            name="Suspect List View"
+            icon="icons/sample.gif"
+            category="com.dforensic.plugin.manal"
+            class="com.dforensic.plugin.manal.views.SuspectList"
+            id="com.dforensic.plugin.manal.views.SuspectList">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.jdt.ui.JavaPerspective">
+         <view
+               ratio="0.5"
+               relative="org.eclipse.ui.views.TaskList"
+               relationship="right"
+               id="com.dforensic.plugin.manal.views.SuspectList">
+         </view>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="com.dforensic.plugin.manal.model.ApiDescription"
+            class="com.dforensic.plugin.manal.ApiDescriptionAdapterFactory">
+         <adapter
+               type="org.eclipse.ui.views.properties.IPropertySource">
+         </adapter>
+      </factory>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            name="Digital Forensic"
+            id="com.dforensic.plugin.manal.commands.category">
+      </category>
+      <command
+            name="Suspect Search"
+            categoryId="com.dforensic.plugin.manal.commands.category"
+            id="com.dforensic.plugin.manal.commands.suspectSearch">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            commandId="com.dforensic.plugin.manal.commands.suspectSearch"
+            class="com.dforensic.plugin.manal.handlers.SuspectSearchHandler">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="com.dforensic.plugin.manal.commands.suspectSearch"
+            contextId="org.eclipse.ui.contexts.window"
+            sequence="M1+7"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.jdt.ui.PackageExplorer">
+		<command
+	    	commandId="com.dforensic.plugin.manal.commands.suspectSearch"
+            label="Search suspected API" style="push">
+        </command>
+      </menuContribution>
+   </extension>
+
+</plugin>
