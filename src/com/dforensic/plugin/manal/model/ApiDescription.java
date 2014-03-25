@@ -1,6 +1,5 @@
 package com.dforensic.plugin.manal.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ApiDescription {
@@ -9,6 +8,7 @@ public class ApiDescription {
 	private List<String> mParamTypes;
 	private List<String> mParamValues;
 	private String mMethodName;
+	private String mSignature;
 
 	public String getMethodName() {
 		return mMethodName;
@@ -17,6 +17,14 @@ public class ApiDescription {
 	public void setMethodName(String methodName) {
 		mMethodName = methodName;
 	}
+	
+	public String getSignature() {
+            return mSignature;
+        }
+
+        public void setSignature(String signature) {
+            mSignature = signature;
+        }
 	
 	public String getReturnType() {
 		return mReturnType;
