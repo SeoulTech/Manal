@@ -97,8 +97,11 @@ public class SuspectSearch {
             apiDesc.setMethodName(method.getElementName());
             apiDesc.setReturnType(method.getReturnType());
             apiDesc.setSignature(method.getSignature());
-            add to adapter properties.
         }
+    }
+    
+    public List<ApiDescription> getMethodDescriptions() {
+    	return mMethodDetails;
     }
 
 }

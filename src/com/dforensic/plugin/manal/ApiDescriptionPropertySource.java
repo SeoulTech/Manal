@@ -22,7 +22,9 @@ public class ApiDescriptionPropertySource implements IPropertySource {
 	@Override
 	public IPropertyDescriptor[] getPropertyDescriptors() {
 		return new IPropertyDescriptor[] {
-			new TextPropertyDescriptor("method_name", "Method Name"),	
+			new TextPropertyDescriptor("method_name", "Method Name"),
+			new TextPropertyDescriptor("return_type", "Return Type"),
+			new TextPropertyDescriptor("signature", "Signature"),
 		};
 	}
 
@@ -30,7 +32,12 @@ public class ApiDescriptionPropertySource implements IPropertySource {
 	public Object getPropertyValue(Object id) {
 		if (id.equals("method_name")) {
 			return apiDescription.getMethodName();
+		} else if (id.equals("return_type")) {
+			return apiDescription.getReturnType();
+		} else if (id.equals("signature")) {
+			return apiDescription.getSignature();
 		}
+		
 		return null;
 	}
 
@@ -51,8 +58,11 @@ public class ApiDescriptionPropertySource implements IPropertySource {
 		String s= (String) value;
 		if (id.equals("method_name")) {
 			apiDescription.setMethodName(s);
+		} else if (id.equals("return_type")) {
+			apiDescription.setReturnType(s);
+		} else if (id.equals("signature")) {
+			apiDescription.setSignature(s);
 		}
-
 	}
 
 }
