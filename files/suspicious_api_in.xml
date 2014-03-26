@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	The file describes methods and their parameters for which
+	the script looks for. 
+ -->
+<data>
+    <method name="URL">
+        <overloading set="1">
+			<parameter name="spec" type="String" pos="1"/>
+		</overloading>            
+    </method>
+    <method name="connect">
+        <overloading set="1">
+		</overloading>            
+    </method>
+    <method name="File">
+        <package>java.io</package>
+        <class>File</class>
+        <type>constructor</type> <!-- may not exist if it's default -->
+        <return>void</return>
+        <overloading set="1">
+			<parameter name="dir" type="File" pos="1"/> <!-- only which may be used in malicious purposes -->
+			<parameter name="name" type="String" pos="2"/>
+		</overloading>            
+		<overloading set="2">
+			<parameter name="path" type="String" pos="1"/>
+		</overloading>
+		<overloading set="3">
+			<parameter name="dirPath" type="String" pos="1"/>
+			<parameter name="name" type="String" pos="2"/>
+		</overloading>
+		<overloading set="4">
+			<parameter name="uri" type="URI" pos="1"/>
+		</overloading>
+    </method>
+    <method name="openFileOutput">
+        <package>android.content</package>
+        <class>Context</class>
+        <return>FileOutputStream</return>
+        <overloading set="1">
+			<parameter name="name" type="String" pos="1"/>
+		</overloading>            
+    </method>
+</data>

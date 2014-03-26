@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	The file defines the template of output.
+	Each output file has its name in the format suspicious_api_out_exectime.xml.
+	After the execution of the srcipt
+	the file stores values of parameters and return values of
+	methods defined in suspicious_api_in.xml.
+ -->
+<data>
+    <method name="method_name">
+        <package>package_name</package>
+        <class>class_name</class>
+        <type>constructor/empty</type> <!-- may not exist if it's default -->
+        <entry file="path_name" line="line_number"> <!-- the set of entries -->
+			<parameter name="param_name" type="param_type" pos="1,2...">value</parameter>
+			<return type="return_type">value</return>
+		</entry>            
+    </method>
+</data>
