@@ -18,6 +18,7 @@
         <class>File</class>
         <type>constructor</type> <!-- may not exist if it's default -->
         <return>void</return>
+        <!-- overloading must be at the end -->
         <overloading set="1">
 			<parameter name="dir" type="File" pos="1"/> <!-- only which may be used in malicious purposes -->
 			<parameter name="name" type="String" pos="2"/>

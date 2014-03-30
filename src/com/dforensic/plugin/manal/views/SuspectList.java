@@ -13,8 +13,9 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-import com.dforensic.plugin.manal.model.ApiDescription;
+import com.dforensic.plugin.manal.model.ApiDescriptor;
 import com.dforensic.plugin.manal.parser.SuspectSearch;
+import com.dforensic.plugin.manal.parser.XmlManager;
 
 public class SuspectList extends ViewPart {
 	public static final String ID = "com.dforensic.plugin.manal.views.SuspectList";
@@ -26,7 +27,7 @@ public class SuspectList extends ViewPart {
 	class ViewLabelProvider extends LabelProvider implements
 			ITableLabelProvider {
 		public String getColumnText(Object obj, int index) {
-			ApiDescription apiDesc = (ApiDescription) obj;
+			ApiDescriptor apiDesc = (ApiDescriptor) obj;
 			return apiDesc.getMethodName();
 		}
 
@@ -46,6 +47,16 @@ public class SuspectList extends ViewPart {
 	 */
 	public void createPartControl(Composite parent) {
 		mParser = new SuspectSearch();
+				
+		XmlManager xmlManager = new XmlManager();
+		xmlManager.readApiDescriptor("suspicious_api_in.xml");
+		List<ApiDescriptor> parsedApi = xmlManager.getParsedApi();
+		System.out.println(">>parsed API:\n\n");
+		for (ApiDescriptor desc : parsedApi) {
+			System.out.println(desc.toString());
+		}
+		
+		mParser.setSuspectApi(parsedApi);
 		mParser.run();
 		
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
@@ -66,14 +77,11 @@ public class SuspectList extends ViewPart {
 
 	// Build up a simple data model
 	// TODO start parsing here
-	private ApiDescription[] getElements() {
+	private ApiDescriptor[] getElements() {
 		if (mParser != null) {
-			List<ApiDescription> methods = mParser.getMethodDescriptions();
-			debug
-			create xml reader
-			get values from xml reader and pass to the parser
+			List<ApiDescriptor> methods = mParser.getMethodDescriptions();
 			if (methods != null) {
-				return methods.toArray(new ApiDescription[methods.size()]);
+				return methods.toArray(new ApiDescriptor[methods.size()]);
 			} else {
 				System.out.println(">>error: Methods are not extracted. NULL.");
 				return null;

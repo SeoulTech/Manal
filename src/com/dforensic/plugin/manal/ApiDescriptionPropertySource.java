@@ -4,13 +4,13 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 
-import com.dforensic.plugin.manal.model.ApiDescription;
+import com.dforensic.plugin.manal.model.ApiDescriptor;
 
 public class ApiDescriptionPropertySource implements IPropertySource {
 
-	private final ApiDescription apiDescription;
+	private final ApiDescriptor apiDescription;
 
-	public ApiDescriptionPropertySource(ApiDescription apiDesc) {
+	public ApiDescriptionPropertySource(ApiDescriptor apiDesc) {
 		apiDescription = apiDesc;
 	}
 	
