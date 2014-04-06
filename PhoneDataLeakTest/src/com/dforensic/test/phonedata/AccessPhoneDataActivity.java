@@ -14,6 +14,8 @@ public class AccessPhoneDataActivity extends Activity {
 
 	private String mDeviceId = null;
 	private TextView mDisplayResTxtView = null;
+	
+	private boolean mIsSendBluetooth = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +43,15 @@ public class AccessPhoneDataActivity extends Activity {
 					mDeviceId.getBytes());
 			File file = storeData.getFile(this);
 			if (file != null) {
-				SendPhoneData sendData = new SendPhoneData();
+				ISendPhoneData sendData = null;
+				if (mIsSendBluetooth) {
+					sendData = new SendBluetoothPhoneData();
+				} else {
+					sendData = new SendEmailPhoneData();
+				}
 				sendData.sendFile(file);
-				mDisplayResTxtView.setText(mDeviceId + " is sent by email.");
+				mDisplayResTxtView.setText(mDeviceId + " is sent by " + sendData.getInterfaceName()  + 
+						".\n" + "File stored: " + file.getPath());
 			} else {
 				Log.w(Constants.APP_NAME, "File doesn't exist.");
 			}

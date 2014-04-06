@@ -20,7 +20,7 @@ import javax.mail.internet.MimeMultipart;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class SendPhoneData {
+public class SendEmailPhoneData implements ISendPhoneData {
 
 	public void sendFile(File file) {
 		Session session = createSessionObject();
@@ -119,6 +119,11 @@ public class SendPhoneData {
 			}
 			return null;
 		}
+	}
+
+	@Override
+	public String getInterfaceName() {
+		return "email";
 	}
 
 }

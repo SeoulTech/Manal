@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 public class StorePhoneData {
@@ -36,24 +37,26 @@ public class StorePhoneData {
 	public void deleteExternalStoragePrivateFile(Context ctx) {
 		// Get path for the file on external storage. If external
 		// storage is not currently mounted this will fail.
-		File file = new File(ctx.getExternalFilesDir(null), "DemoFile.jpg");
-		if (file != null) {
-			file.delete();
+		getFile(ctx);
+		if (mFile != null) {
+			mFile.delete();
 		}
 	}
 
 	public boolean hasExternalStoragePrivateFile(Context ctx) {
 		// Get path for the file on external storage. If external
 		// storage is not currently mounted this will fail.
-		File file = new File(ctx.getExternalFilesDir(null), "DemoFile.jpg");
-		if (file != null) {
-			return file.exists();
+		getFile(ctx);
+		if (mFile != null) {
+			return mFile.exists();
 		}
 		return false;
 	}
 	
 	public File getFile(Context ctx) {
-		mFile = new File(ctx.getExternalFilesDir(null), mFileName);
+		// mFile = new File(Environment.getExternalStorageDirectory(), mFileName);
+		// mFile = new File(ctx.getExternalFilesDir(null), mFileName);
+		mFile = new File("mnt/sdcard/", mFileName);
 		return mFile;
 	}
 	
