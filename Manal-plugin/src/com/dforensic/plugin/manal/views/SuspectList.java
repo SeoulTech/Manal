@@ -2,6 +2,8 @@ package com.dforensic.plugin.manal.views;
 
 import java.util.List;
 
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -10,6 +12,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
@@ -17,11 +20,13 @@ import com.dforensic.plugin.manal.model.ApiDescriptor;
 import com.dforensic.plugin.manal.parser.SuspectSearch;
 import com.dforensic.plugin.manal.parser.XmlManager;
 
+import org.eclipse.jdt.ui.JavaUI;
+
 public class SuspectList extends ViewPart {
 	public static final String ID = "com.dforensic.plugin.manal.views.SuspectList";
 
 	private TableViewer viewer;
-	
+
 	private SuspectSearch mParser;
 
 	class ViewLabelProvider extends LabelProvider implements
@@ -47,7 +52,7 @@ public class SuspectList extends ViewPart {
 	 */
 	public void createPartControl(Composite parent) {
 		mParser = new SuspectSearch();
-				
+
 		XmlManager xmlManager = new XmlManager();
 		xmlManager.readApiDescriptor("suspicious_api_in.xml");
 		List<ApiDescriptor> parsedApi = xmlManager.getParsedApi();
@@ -55,17 +60,18 @@ public class SuspectList extends ViewPart {
 		for (ApiDescriptor desc : parsedApi) {
 			System.out.println(desc.toString());
 		}
-		
+
 		mParser.setSuspectApi(parsedApi);
 		mParser.run();
-		
+
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
 		viewer.setContentProvider(new ArrayContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		getSite().setSelectionProvider(viewer);
 		viewer.setInput(getElements());
-
+		
+		openJavaSourceEditor();
 	}
 
 	/**
@@ -73,6 +79,22 @@ public class SuspectList extends ViewPart {
 	 */
 	public void setFocus() {
 		viewer.getControl().setFocus();
+	}
+
+	public void openJavaSourceEditor() {
+		// TODO test to open Java editor
+		List<ApiDescriptor> apiList = mParser.getMethodDescriptions();
+		if ((apiList != null) && !apiList.isEmpty()) {
+			CompilationUnit cu = apiList.get(0).getCompilatioinUnite();
+			if (cu != null) {
+				try {
+					JavaUI.openInEditor(cu.getJavaElement());
+				} catch (PartInitException | JavaModelException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	// Build up a simple data model
@@ -91,14 +113,11 @@ public class SuspectList extends ViewPart {
 			return null;
 		}
 		/*
-		ApiDescription[] apiDescAr = new ApiDescription[2];
-		ApiDescription apiDesc = new ApiDescription();
-		apiDesc.setMethodName("openFile");
-		apiDescAr[0] = apiDesc;
-		apiDesc = new ApiDescription();
-		apiDesc.setMethodName("connectHttp");
-		apiDescAr[1] = apiDesc;
-		return apiDescAr;
-		*/
+		 * ApiDescription[] apiDescAr = new ApiDescription[2]; ApiDescription
+		 * apiDesc = new ApiDescription(); apiDesc.setMethodName("openFile");
+		 * apiDescAr[0] = apiDesc; apiDesc = new ApiDescription();
+		 * apiDesc.setMethodName("connectHttp"); apiDescAr[1] = apiDesc; return
+		 * apiDescAr;
+		 */
 	}
 }

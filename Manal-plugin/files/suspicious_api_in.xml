@@ -4,6 +4,17 @@
 	the script looks for. 
  -->
 <data>
+    <method name="write">
+        <overloading set="1">
+			<parameter name="out" type="byte" pos="1"/>
+		</overloading>            
+    </method>
+    <method name="attachFile">
+        <overloading set="1">
+			<parameter name="msg" type="Message" pos="1"/>
+			<parameter name="file" type="File" pos="2"/>
+		</overloading>            
+    </method>
     <method name="URL">
         <overloading set="1">
 			<parameter name="spec" type="String" pos="1"/>

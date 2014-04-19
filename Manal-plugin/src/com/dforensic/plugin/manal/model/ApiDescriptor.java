@@ -1,9 +1,11 @@
 package com.dforensic.plugin.manal.model;
 
+import java.lang.management.CompilationMXBean;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
@@ -25,6 +27,9 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
  *
  */
 public class ApiDescriptor {
+	
+	private CompilationUnit mCompilationUnit = null;
+	private int mLineNum = -1;
 	
 	public enum MethodType {CONSTRUCTOR, NORMAL};
 	
@@ -131,6 +136,14 @@ public class ApiDescriptor {
 		}
 		
 	};
+	
+	public void setCompilationUnit(CompilationUnit cu) {
+		mCompilationUnit = cu;
+	}
+	
+	public CompilationUnit getCompilatioinUnite() {
+		return mCompilationUnit;
+	}
 	
 	private String mReturnType = null;
 	private String mReturnValue = null;

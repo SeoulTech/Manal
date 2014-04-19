@@ -98,14 +98,14 @@ public class SuspectSearch {
 			throws JavaModelException {
 		for (ICompilationUnit unit : mypackage.getCompilationUnits()) {
 			// now create the AST for the ICompilationUnits
-			CompilationUnit parse = parse(unit);
+			final CompilationUnit parse = parse(unit);
 			MethodVisitor visitor = new MethodVisitor();
 			parse.accept(visitor);
 
 			for (MethodDeclaration method : visitor.getMethods()) {
 				System.out.print("Method name: " + method.getName()
 						+ " Return type: " + method.getReturnType2());
-				extractStatements(method);
+				extractStatements(parse, method);
 			}
 		}
 	}
@@ -125,7 +125,7 @@ public class SuspectSearch {
 		return (CompilationUnit) parser.createAST(null); // parse
 	}
 
-	private void extractStatements(MethodDeclaration method) {
+	private void extractStatements(CompilationUnit cu, MethodDeclaration method) {
 		Block body = method.getBody();
 		if (body != null) {
 			for (Statement smt : (List<Statement>) body.statements()) {
@@ -134,7 +134,7 @@ public class SuspectSearch {
 							.getExpression();
 					if (esn instanceof MethodInvocation) {
 						MethodInvocation inv = (MethodInvocation) esn;
-						filterMethod(inv);
+						filterMethod(cu, inv);
 						// SimpleName name = inv.getName();
 						// ApiDescriptor apiDesc = new ApiDescriptor();
 						// apiDesc.setMethodName(name.getIdentifier());
@@ -149,11 +149,12 @@ public class SuspectSearch {
 		}
 	}
 
-	private void filterMethod(MethodInvocation method) {
+	private void filterMethod(CompilationUnit cu, MethodInvocation method) {
 		if (mFilterMethods != null) {
 			for (ApiDescriptor desc : mFilterMethods) {
 				if (desc.isSimilar(method)) {
 				 	ApiDescriptor cloneDesc = desc.clone(method);
+				 	cloneDesc.setCompilationUnit(cu);
 				 	addMethodDetails(cloneDesc);
 				}
 			}
