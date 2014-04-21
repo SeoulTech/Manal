@@ -141,7 +141,7 @@ public class ApiDescriptor {
 		mCompilationUnit = cu;
 	}
 	
-	public CompilationUnit getCompilatioinUnite() {
+	public CompilationUnit getCompilatioinUnit() {
 		return mCompilationUnit;
 	}
 	

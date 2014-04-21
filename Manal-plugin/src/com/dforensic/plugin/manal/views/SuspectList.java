@@ -85,7 +85,7 @@ public class SuspectList extends ViewPart {
 		// TODO test to open Java editor
 		List<ApiDescriptor> apiList = mParser.getMethodDescriptions();
 		if ((apiList != null) && !apiList.isEmpty()) {
-			CompilationUnit cu = apiList.get(0).getCompilatioinUnite();
+			CompilationUnit cu = apiList.get(0).getCompilatioinUnit();
 			if (cu != null) {
 				try {
 					JavaUI.openInEditor(cu.getJavaElement());

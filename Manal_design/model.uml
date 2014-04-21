@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20110701" xmlns:xmi="http://www.omg.org/spec/XMI/20110701" xmlns:uml="http://www.eclipse.org/uml2/4.0.0/UML" xmi:id="_4QL5oMdwEeOIm4M_27fwzA" name="model">
+  <ownedComment xmi:id="_nGxPsMdyEeOIm4M_27fwzA">
+    <body>eclipse frw</body>
+  </ownedComment>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_4QQLEMdwEeOIm4M_27fwzA" name="Interaction1"/>
+  <packagedElement xmi:type="uml:Class" xmi:id="_Pe6DAMdxEeOIm4M_27fwzA" name="ViewPart">
+    <generalization xmi:id="_fvU9gMdxEeOIm4M_27fwzA" general="_Y2KGQMdxEeOIm4M_27fwzA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_Y2KGQMdxEeOIm4M_27fwzA" clientDependency="_4-mCUMdxEeOIm4M_27fwzA _Boa-4MdyEeOIm4M_27fwzA" name="SuspectList">
+    <generalization xmi:id="_g5TdUMdxEeOIm4M_27fwzA" general="_Pe6DAMdxEeOIm4M_27fwzA"/>
+    <ownedAttribute xmi:id="_ClfR0Md3EeOBEowY1sueYw" name="apiDescriptor" type="_496TkMd2EeOBEowY1sueYw" association="_Clgf8Md3EeOBEowY1sueYw">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_ClfR0cd3EeOBEowY1sueYw"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_ClfR0sd3EeOBEowY1sueYw" value="*"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Package" xmi:id="_ib3cQMdxEeOIm4M_27fwzA" name="parser">
+    <ownedComment xmi:id="_b4ZSwMdyEeOIm4M_27fwzA">
+      <body> </body>
+    </ownedComment>
+    <ownedComment xmi:id="_g9tmwMdyEeOIm4M_27fwzA">
+      <body> eclipse JDT, AST</body>
+    </ownedComment>
+    <packagedElement xmi:type="uml:Class" xmi:id="_mPPAMMdxEeOIm4M_27fwzA" clientDependency="_UwkUcMdyEeOIm4M_27fwzA" name="SuspectSearch"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_wHamQMdxEeOIm4M_27fwzA" name="XmlManager"/>
+    <packagedElement xmi:type="uml:Abstraction" xmi:id="_UwkUcMdyEeOIm4M_27fwzA" name="Abstraction1" client="_mPPAMMdxEeOIm4M_27fwzA" supplier="_mPPAMMdxEeOIm4M_27fwzA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Dependency" xmi:id="_4-mCUMdxEeOIm4M_27fwzA" name="parse project (Java) and compare with API from xml" client="_Y2KGQMdxEeOIm4M_27fwzA" supplier="_mPPAMMdxEeOIm4M_27fwzA"/>
+  <packagedElement xmi:type="uml:Dependency" xmi:id="_Boa-4MdyEeOIm4M_27fwzA" name="get API to search" client="_Y2KGQMdxEeOIm4M_27fwzA" supplier="_wHamQMdxEeOIm4M_27fwzA"/>
+  <packagedElement xmi:type="uml:Package" xmi:id="_10kkEMd2EeOBEowY1sueYw" name="model">
+    <packagedElement xmi:type="uml:Class" xmi:id="_496TkMd2EeOBEowY1sueYw" name="ApiDescriptor"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_Clgf8Md3EeOBEowY1sueYw" name="matched API" memberEnd="_Clgf8cd3EeOBEowY1sueYw _ClfR0Md3EeOBEowY1sueYw">
+    <ownedEnd xmi:id="_Clgf8cd3EeOBEowY1sueYw" name="suspectList" type="_Y2KGQMdxEeOIm4M_27fwzA" association="_Clgf8Md3EeOBEowY1sueYw">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Clgf8sd3EeOBEowY1sueYw" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Clgf88d3EeOBEowY1sueYw" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+</uml:Model>
