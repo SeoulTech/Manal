@@ -22,7 +22,7 @@ import com.dforensic.plugin.manal.parser.XmlManager;
 
 import org.eclipse.jdt.ui.JavaUI;
 
-public class SuspectList extends ViewPart {
+public class SuspectListVw extends ViewPart {
 	public static final String ID = "com.dforensic.plugin.manal.views.SuspectList";
 
 	private TableViewer viewer;
@@ -70,8 +70,6 @@ public class SuspectList extends ViewPart {
 		viewer.setLabelProvider(new ViewLabelProvider());
 		getSite().setSelectionProvider(viewer);
 		viewer.setInput(getElements());
-		
-		openJavaSourceEditor();
 	}
 
 	/**
@@ -79,22 +77,6 @@ public class SuspectList extends ViewPart {
 	 */
 	public void setFocus() {
 		viewer.getControl().setFocus();
-	}
-
-	public void openJavaSourceEditor() {
-		// TODO test to open Java editor
-		List<ApiDescriptor> apiList = mParser.getMethodDescriptions();
-		if ((apiList != null) && !apiList.isEmpty()) {
-			CompilationUnit cu = apiList.get(0).getCompilatioinUnit();
-			if (cu != null) {
-				try {
-					JavaUI.openInEditor(cu.getJavaElement());
-				} catch (PartInitException | JavaModelException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
 	}
 
 	// Build up a simple data model

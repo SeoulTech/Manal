@@ -1,16 +1,17 @@
 package com.dforensic.plugin.manal.model;
 
-import java.lang.management.CompilationMXBean;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+
+import soot.jimple.infoflow.InfoflowResults.SinkInfo;
+import soot.jimple.infoflow.InfoflowResults.SourceInfo;
 
 /**
  * <p>
@@ -137,12 +138,33 @@ public class ApiDescriptor {
 		
 	};
 	
+	ApiDescriptor(SinkInfo sinkInfo) {
+		
+	}
+	
+	ApiDescriptor(SourceInfo sourceInfo) {
+		
+	}
+	
+	/* <p>Methods to add information about the method
+	 * in the eclipse project.</p>
+	 * <p>CompilationUnit is used to obtain JavaElement
+	 * which can be opened in a java editor.</p> */
+	
 	public void setCompilationUnit(CompilationUnit cu) {
 		mCompilationUnit = cu;
 	}
 	
 	public CompilationUnit getCompilatioinUnit() {
 		return mCompilationUnit;
+	}
+	
+	public void setLineNumber(int ln) {
+		mLineNum = ln;
+	}
+	
+	public int getLineNumber() {
+		return mLineNum;
 	}
 	
 	private String mReturnType = null;

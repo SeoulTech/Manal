@@ -1,4 +1,4 @@
-package com.dforensic.plugin.manal.handlers;
+package com.dforensic.plugin.manal.views.handlers;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -8,7 +8,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.jface.dialogs.MessageDialog;
 
-import com.dforensic.plugin.manal.views.SuspectList;
+import com.dforensic.plugin.manal.views.SuspectListVw;
 
 /**
  * Our sample handler extends AbstractHandler, an IHandler base class.
@@ -27,11 +27,11 @@ public class SuspectSearchHandler extends AbstractHandler {
 	 * from the application context.
 	 */
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+		/*
 		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
 	    IWorkbenchPage page = window.getActivePage();
-	    SuspectList view = (SuspectList) page.findView(SuspectList.ID);
+	    SuspectListVw view = (SuspectListVw) page.findView(SuspectListVw.ID);
 		view.openJavaSourceEditor();
-	    /*
 	    MessageDialog.openInformation(
 				window.getShell(),
 				"Manal",
