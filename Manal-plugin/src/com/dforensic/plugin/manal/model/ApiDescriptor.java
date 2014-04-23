@@ -137,15 +137,7 @@ public class ApiDescriptor {
 		}
 		
 	};
-	
-	ApiDescriptor(SinkInfo sinkInfo) {
 		
-	}
-	
-	ApiDescriptor(SourceInfo sourceInfo) {
-		
-	}
-	
 	/* <p>Methods to add information about the method
 	 * in the eclipse project.</p>
 	 * <p>CompilationUnit is used to obtain JavaElement
@@ -178,6 +170,14 @@ public class ApiDescriptor {
 	private MethodType mMethodType = MethodType.NORMAL;
 
 	public ApiDescriptor() {
+		
+	}
+	
+	public ApiDescriptor(SinkInfo sinkInfo) {
+		
+	}
+	
+	public ApiDescriptor(SourceInfo sourceInfo) {
 		
 	}
 	

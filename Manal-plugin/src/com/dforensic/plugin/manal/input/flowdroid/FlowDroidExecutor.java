@@ -1,27 +1,12 @@
 package com.dforensic.plugin.manal.input.flowdroid;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import com.dforensic.plugin.manal.model.ApiDescriptor;
-import com.dforensic.plugin.manal.utils.ResUtils;
 
 import soot.SootMethod;
 import soot.Unit;
@@ -45,10 +30,8 @@ public class FlowDroidExecutor {
 	 * path to android-dir (path/android-platforms/)
 	 */
 	private String mAndroidSdkPath = null;
-	
-	private final static String OUTPUT_PATH = "output/";
 
-	private static final class FlowDroidResultsAvailableHandler implements
+	private class FlowDroidResultsAvailableHandler implements
 			ResultsAvailableHandler {
 		private final BufferedWriter wr;
 
@@ -64,14 +47,26 @@ public class FlowDroidExecutor {
 		public void onResultsAvailable(
 				BiDiInterproceduralCFG<Unit, SootMethod> cfg,
 				InfoflowResults results) {
+			if (mSinks == null) {
+				mSinks = new ArrayList<ApiDescriptor>();
+			}
+			if (mSources == null) {
+				mSources = new ArrayList<ApiDescriptor>();
+			}
 			// Dump the results
 			if (results == null) {
 				print("No results found.");
 			} else {
 				for (SinkInfo sink : results.getResults().keySet()) {
+					ApiDescriptor sinkDesc = new ApiDescriptor(sink);
+					mSinks.add(sinkDesc);
 					print("Found a flow to sink " + sink
 							+ ", from the following sources:");
 					for (SourceInfo source : results.getResults().get(sink)) {
+						ApiDescriptor sourceDesc = new ApiDescriptor(source);
+						sourceDesc.addSinkRef(sinkDesc);
+						sinkDesc.addSourceRef(sourceDesc);
+						mSources.add(sourceDesc);
 						print("\t- "
 								+ source.getSource()
 								+ " (in "
@@ -95,9 +90,12 @@ public class FlowDroidExecutor {
 			}
 		}
 	}
+	
+	private List<ApiDescriptor> mSinks = null;
+	private List<ApiDescriptor> mSources = null;
 
-	static String command;
-	static boolean generate = false;
+	private static String command;
+	private static boolean generate = false;
 
 	private static int timeout = -1;
 	private static int sysTimeout = -1;
@@ -117,6 +115,7 @@ public class FlowDroidExecutor {
 
 	private static boolean DEBUG = false;
 
+	/*
 	private static boolean parseAdditionalOptions(String[] args) {
 		int i = 2;
 		while (i < args.length) {
@@ -283,6 +282,7 @@ public class FlowDroidExecutor {
 			ex.printStackTrace();
 		}
 	}
+	*/
 
 	public static String callgraphAlgorithmToString(CallgraphAlgorithm algorihm) {
 		switch (algorihm) {
@@ -348,7 +348,7 @@ public class FlowDroidExecutor {
 
 			System.out.println("Running data flow analysis...");
 			final InfoflowResults res = app
-					.runInfoflow(new MyResultsAvailableHandler());
+					.runInfoflow(new FlowDroidResultsAvailableHandler());
 			System.out.println("Analysis has run for "
 					+ (System.nanoTime() - beforeRun) / 1E9 + " seconds");
 			return res;
@@ -391,12 +391,24 @@ public class FlowDroidExecutor {
 	*/
 
 	public void execute() {
-		mApkPath = new String("D:\\Documents\\Research\\eclipse_plugin\\Manal\\PhoneDataLeakTest\\bin\\PhoneDataLeakTest.apk");
-		mAndroidSdkPath = new String ("D:\\Documents\\LGE MC 5PM 1PL\\android-sdk_r10-windows\\platforms"); 
+		mApkPath = new String(
+				"D:\\Documents\\Research\\eclipse_plugin\\Manal\\PhoneDataLeakTest\\bin\\PhoneDataLeakTest.apk");
+		mAndroidSdkPath = new String(
+				"D:\\Documents\\LGE MC 5PM 1PL\\android-sdk_r10-windows\\platforms");
 		
+		if (mSinks != null) {
+			mSinks.clear();
+			mSinks = null;
+		}
+		if (mSources != null) {
+			mSources.clear();
+			mSources = null;
+		}
+
 		// start with cleanup:
-		ResUtils.openProjectFile
-		File outputDir = new File("JimpleOutput");
+		// TODO when store output
+		/*
+		BufferedReader outputDir = ResUtils.openProjectFile(OUTPUT_PATH + "JimpleOutput");
 		if (outputDir.isDirectory()) {
 			boolean success = true;
 			for (File f : outputDir.listFiles()) {
@@ -408,68 +420,29 @@ public class FlowDroidExecutor {
 			}
 			outputDir.delete();
 		}
+		*/
 
-		// Parse additional command-line arguments
-		if (!parseAdditionalOptions(args))
-			return;
-		if (!validateAdditionalOptions())
-			return;
-
-		List<String> apkFiles = new ArrayList<String>();
-		File apkFile = new File(args[0]);
+		File apkFile = new File(mApkPath);
 		String extension = apkFile.getName().substring(
 				apkFile.getName().lastIndexOf("."));
-		if (apkFile.isDirectory()) {
-			String[] dirFiles = apkFile.list(new FilenameFilter() {
-
-				@Override
-				public boolean accept(File dir, String name) {
-					return (name.endsWith(".apk"));
-				}
-
-			});
-			for (String s : dirFiles)
-				apkFiles.add(s);
-		} else if (extension.equalsIgnoreCase(".txt")) {
-			BufferedReader rdr = new BufferedReader(new FileReader(apkFile));
-			String line = null;
-			while ((line = rdr.readLine()) != null)
-				apkFiles.add(line);
-			rdr.close();
-		} else if (extension.equalsIgnoreCase(".apk"))
-			apkFiles.add(args[0]);
-		else {
+		if (apkFile.isDirectory() || !extension.equalsIgnoreCase(".apk")) {
 			System.err.println("Invalid input file format: " + extension);
 			return;
 		}
 
-		for (final String fileName : apkFiles) {
-			final String fullFilePath;
+		// Run the analysis
+		// TODO until do optimization
+		// run with default parameters
+		/*
+		if (timeout > 0)
+			runAnalysisTimeout(mApkPath, mAndroidSdkPath);
+		else if (sysTimeout > 0)
+			runAnalysisSysTimeout(mApkPath, mAndroidSdkPath);
+		else
+		*/
+		runAnalysis(mApkPath, mAndroidSdkPath);
 
-			// Directory handling
-			if (apkFiles.size() > 1) {
-				if (apkFile.isDirectory())
-					fullFilePath = args[0] + File.separator + fileName;
-				else
-					fullFilePath = fileName;
-				System.out.println("Analyzing file " + fullFilePath + "...");
-				File flagFile = new File("_Run_" + new File(fileName).getName());
-				if (flagFile.exists())
-					continue;
-				flagFile.createNewFile();
-			} else
-				fullFilePath = fileName;
-
-			// Run the analysis
-			if (timeout > 0)
-				runAnalysisTimeout(fullFilePath, args[1]);
-			else if (sysTimeout > 0)
-				runAnalysisSysTimeout(fullFilePath, args[1]);
-			else
-				runAnalysis(fullFilePath, args[1]);
-
-			System.gc();
-		}
+		System.gc();
 	}
 
 	public void setApkPath(String path) {
