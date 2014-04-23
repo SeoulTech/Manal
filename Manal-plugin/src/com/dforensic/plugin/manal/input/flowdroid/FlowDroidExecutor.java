@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dforensic.plugin.manal.model.ApiDescriptor;
+import org.xmlpull.v1.XmlPullParserException;
 
 import soot.SootMethod;
 import soot.Unit;
@@ -50,9 +51,6 @@ public class FlowDroidExecutor {
 			if (mSinks == null) {
 				mSinks = new ArrayList<ApiDescriptor>();
 			}
-			if (mSources == null) {
-				mSources = new ArrayList<ApiDescriptor>();
-			}
 			// Dump the results
 			if (results == null) {
 				print("No results found.");
@@ -64,9 +62,9 @@ public class FlowDroidExecutor {
 							+ ", from the following sources:");
 					for (SourceInfo source : results.getResults().get(sink)) {
 						ApiDescriptor sourceDesc = new ApiDescriptor(source);
-						sourceDesc.addSinkRef(sinkDesc);
-						sinkDesc.addSourceRef(sourceDesc);
-						mSources.add(sourceDesc);
+						// sourceDesc.addDependency(sinkDesc);
+						sinkDesc.addDependency(sourceDesc);
+						// mSources.add(sourceDesc);
 						print("\t- "
 								+ source.getSource()
 								+ " (in "
@@ -92,26 +90,28 @@ public class FlowDroidExecutor {
 	}
 	
 	private List<ApiDescriptor> mSinks = null;
-	private List<ApiDescriptor> mSources = null;
+	// not use: there would be many repeating sources.	
+	// make a UUID: signature + class + line
+	// private List<ApiDescriptor> mSources = null;
 
-	private static String command;
-	private static boolean generate = false;
+	private String command;
+	private boolean generate = false;
 
-	private static int timeout = -1;
-	private static int sysTimeout = -1;
+	private int timeout = -1;
+	private int sysTimeout = -1;
 
-	private static boolean stopAfterFirstFlow = false;
-	private static boolean implicitFlows = false;
-	private static boolean staticTracking = true;
-	private static boolean enableCallbacks = true;
-	private static boolean enableExceptions = true;
-	private static int accessPathLength = 5;
-	private static LayoutMatchingMode layoutMatchingMode = LayoutMatchingMode.MatchSensitiveOnly;
-	private static boolean flowSensitiveAliasing = true;
-	private static boolean computeResultPaths = true;
-	private static boolean aggressiveTaintWrapper = false;
+	private boolean stopAfterFirstFlow = false;
+	private boolean implicitFlows = false;
+	private boolean staticTracking = true;
+	private boolean enableCallbacks = true;
+	private boolean enableExceptions = true;
+	private int accessPathLength = 5;
+	private LayoutMatchingMode layoutMatchingMode = LayoutMatchingMode.MatchSensitiveOnly;
+	private boolean flowSensitiveAliasing = true;
+	private boolean computeResultPaths = true;
+	private boolean aggressiveTaintWrapper = false;
 
-	private static CallgraphAlgorithm callgraphAlgorithm = CallgraphAlgorithm.AutomaticSelection;
+	private CallgraphAlgorithm callgraphAlgorithm = CallgraphAlgorithm.AutomaticSelection;
 
 	private static boolean DEBUG = false;
 
@@ -284,7 +284,7 @@ public class FlowDroidExecutor {
 	}
 	*/
 
-	public static String callgraphAlgorithmToString(CallgraphAlgorithm algorihm) {
+	public String callgraphAlgorithmToString(CallgraphAlgorithm algorihm) {
 		switch (algorihm) {
 		case AutomaticSelection:
 			return "AUTO";
@@ -297,7 +297,7 @@ public class FlowDroidExecutor {
 		}
 	}
 
-	public static String layoutMatchingModeToString(LayoutMatchingMode mode) {
+	public String layoutMatchingModeToString(LayoutMatchingMode mode) {
 		switch (mode) {
 		case NoMatch:
 			return "NONE";
@@ -310,7 +310,7 @@ public class FlowDroidExecutor {
 		}
 	}
 
-	private static InfoflowResults runAnalysis(final String fileName,
+	private InfoflowResults runAnalysis(final String fileName,
 			final String androidJar) {
 		try {
 			final long beforeRun = System.nanoTime();
@@ -356,7 +356,11 @@ public class FlowDroidExecutor {
 			System.err.println("Could not read file: " + ex.getMessage());
 			ex.printStackTrace();
 			throw new RuntimeException(ex);
-		}
+		} catch (XmlPullParserException ex) {
+			System.err.println("Could not parse xml: " + ex.getMessage());
+			ex.printStackTrace();
+			throw new RuntimeException(ex);
+		}		
 	}
 
 	/*
@@ -400,10 +404,12 @@ public class FlowDroidExecutor {
 			mSinks.clear();
 			mSinks = null;
 		}
+		/*
 		if (mSources != null) {
 			mSources.clear();
 			mSources = null;
 		}
+		*/
 
 		// start with cleanup:
 		// TODO when store output

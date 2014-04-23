@@ -1,5 +1,6 @@
 package com.dforensic.plugin.manal.model;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -168,17 +169,47 @@ public class ApiDescriptor {
 	private String mClassName = null;
 	/** Constructor or a normal method. */
 	private MethodType mMethodType = MethodType.NORMAL;
+	
+	private List<WeakReference<ApiDescriptor>> mDependencyList = null;
+	private WeakReference<SinkInfo> mRootSink = null;
+	private WeakReference<SourceInfo> mRootSource = null;
 
 	public ApiDescriptor() {
 		
 	}
 	
 	public ApiDescriptor(SinkInfo sinkInfo) {
-		
+		mRootSink = new WeakReference<SinkInfo>(sinkInfo);
 	}
 	
 	public ApiDescriptor(SourceInfo sourceInfo) {
+		mRootSource = new WeakReference<SourceInfo>(sourceInfo);
+	}
+	
+	
+	public void addDependency(ApiDescriptor method) {
+		if (mDependencyList == null) {
+			mDependencyList = new ArrayList<WeakReference<ApiDescriptor>>();
+		}
+		mDependencyList.add(new WeakReference<ApiDescriptor>(method));
+	}		
+	
+	public List<WeakReference<ApiDescriptor>> getDependencyList() {
+		return mDependencyList;
+	}
 		
+	public boolean isSink() {
+		if (mRootSink != null) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean isSource() {
+		if (mRootSource != null) {
+			return true;
+		}
+		return false;
 	}
 	
 	public ApiDescriptor(MethodInvocation method) {
