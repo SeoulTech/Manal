@@ -1,3 +1,4 @@
 Nikolay:
+	Test branching out
 	1. run FlowDroidExecutor in a handler thourh Manager.
 	2. add a list in a view.
