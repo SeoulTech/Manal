@@ -9,6 +9,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.jface.dialogs.MessageDialog;
 
 import com.dforensic.plugin.manal.ManalManager;
+import com.dforensic.plugin.manal.Apk2JavaManager;
 import com.dforensic.plugin.manal.views.SuspectListVw;
 
 /**
@@ -28,8 +29,10 @@ public class SuspectSearchHandler extends AbstractHandler {
 	 * from the application context.
 	 */
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		ManalManager manager = new ManalManager();
-		manager.searchSuspiciousApi();
+		// ManalManager manager = new ManalManager();
+		// manager.searchSuspiciousApi();
+		Apk2JavaManager manager = new Apk2JavaManager();
+		manager.execute();
 		/*
 		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
 	    IWorkbenchPage page = window.getActivePage();
