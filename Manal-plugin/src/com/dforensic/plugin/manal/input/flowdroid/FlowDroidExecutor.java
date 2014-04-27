@@ -3,10 +3,15 @@ package com.dforensic.plugin.manal.input.flowdroid;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.dforensic.plugin.manal.model.ApiDescriptor;
+
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Platform;
+import org.osgi.framework.Bundle;
 import org.xmlpull.v1.XmlPullParserException;
 
 import soot.SootMethod;
@@ -18,11 +23,16 @@ import soot.jimple.infoflow.InfoflowResults.SourceInfo;
 import soot.jimple.infoflow.android.SetupApplication;
 import soot.jimple.infoflow.android.AndroidSourceSinkManager.LayoutMatchingMode;
 import soot.jimple.infoflow.handlers.ResultsAvailableHandler;
+import soot.jimple.infoflow.solver.IInfoflowCFG;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
 import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 
 public class FlowDroidExecutor {
 
+	public interface FlowDroidCallback {
+		public void onExecutionDone();
+	}
+	
 	/**
 	 * path to apk-file
 	 */
@@ -42,12 +52,20 @@ public class FlowDroidExecutor {
 
 		private FlowDroidResultsAvailableHandler(BufferedWriter wr) {
 			this.wr = wr;
+		}	
+
+		private void print(String string) {
+			try {
+				System.out.println(string);
+				if (wr != null)
+					wr.write(string + "\n");
+			} catch (IOException ex) {
+				// ignore
+			}
 		}
 
 		@Override
-		public void onResultsAvailable(
-				BiDiInterproceduralCFG<Unit, SootMethod> cfg,
-				InfoflowResults results) {
+		public void onResultsAvailable(IInfoflowCFG cfg, InfoflowResults results) {
 			if (mSinks == null) {
 				mSinks = new ArrayList<ApiDescriptor>();
 			}
@@ -76,23 +94,15 @@ public class FlowDroidExecutor {
 					}
 				}
 			}
-		}
-
-		private void print(String string) {
-			try {
-				System.out.println(string);
-				if (wr != null)
-					wr.write(string + "\n");
-			} catch (IOException ex) {
-				// ignore
-			}
-		}
+		}			
 	}
 	
 	private List<ApiDescriptor> mSinks = null;
 	// not use: there would be many repeating sources.	
 	// make a UUID: signature + class + line
 	// private List<ApiDescriptor> mSources = null;
+	
+	private FlowDroidCallback mFlowDroidCallback = null;
 
 	private String command;
 	private boolean generate = false;
@@ -114,6 +124,18 @@ public class FlowDroidExecutor {
 	private CallgraphAlgorithm callgraphAlgorithm = CallgraphAlgorithm.AutomaticSelection;
 
 	private static boolean DEBUG = false;
+	
+	public void registerFlowDroidCallback(FlowDroidCallback cb) {
+		mFlowDroidCallback = cb;
+	}
+	
+	public void unregisterFlowDroidCallback(FlowDroidCallback cb) {
+		mFlowDroidCallback = null;
+	}
+	
+	public List<ApiDescriptor> getDiscoveredSinks() {
+		return mSinks;
+	}
 
 	/*
 	private static boolean parseAdditionalOptions(String[] args) {
@@ -327,7 +349,7 @@ public class FlowDroidExecutor {
 			app.setLayoutMatchingMode(layoutMatchingMode);
 			app.setFlowSensitiveAliasing(flowSensitiveAliasing);
 			app.setComputeResultPaths(computeResultPaths);
-
+		
 			final EasyTaintWrapper taintWrapper;
 			if (new File("../soot-infoflow/EasyTaintWrapperSource.txt")
 					.exists())
@@ -351,6 +373,9 @@ public class FlowDroidExecutor {
 					.runInfoflow(new FlowDroidResultsAvailableHandler());
 			System.out.println("Analysis has run for "
 					+ (System.nanoTime() - beforeRun) / 1E9 + " seconds");
+			if (mFlowDroidCallback != null) {
+				mFlowDroidCallback.onExecutionDone();
+			}
 			return res;
 		} catch (IOException ex) {
 			System.err.println("Could not read file: " + ex.getMessage());
@@ -395,10 +420,14 @@ public class FlowDroidExecutor {
 	*/
 
 	public void execute() {
+		// mApkPath = new String(
+		// 		"D:\\Documents\\Research\\eclipse_plugin\\Manal\\PhoneDataLeakTest\\bin\\PhoneDataLeakTest.apk");
+		// mAndroidSdkPath = new String(
+		//		"D:\\Documents\\LGE MC 5PM 1PL\\android-sdk_r10-windows\\platforms");
 		mApkPath = new String(
-				"D:\\Documents\\Research\\eclipse_plugin\\Manal\\PhoneDataLeakTest\\bin\\PhoneDataLeakTest.apk");
+				"D:\\Workspaces\\SsSDK\\contest_dev\\Manal\\PhoneDataLeakTest\\bin\\PhoneDataLeakTest.apk");
 		mAndroidSdkPath = new String(
-				"D:\\Documents\\LGE MC 5PM 1PL\\android-sdk_r10-windows\\platforms");
+				"D:\\Workspaces\\android-sdk\\platforms");
 		
 		if (mSinks != null) {
 			mSinks.clear();

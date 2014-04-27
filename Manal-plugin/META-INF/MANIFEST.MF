@@ -14,3 +14,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.ui;bundle-version="3.8.2"
 Bundle-ActivationPolicy: lazy 
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ClassPath: libs/axml-2.0.jar,
+ libs/slf4j-api-1.7.5.jar,
+ libs/slf4j-simple-1.7.5.jar,
+ libs/soot-infoflow-android.jar,
+ libs/soot-infoflow.jar,
+ libs/soot.jar,
+ .

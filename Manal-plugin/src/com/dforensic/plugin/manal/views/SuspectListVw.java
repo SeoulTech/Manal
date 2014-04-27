@@ -51,6 +51,7 @@ public class SuspectListVw extends ViewPart {
 	 * it.
 	 */
 	public void createPartControl(Composite parent) {
+		/*
 		mParser = new SuspectSearch();
 
 		XmlManager xmlManager = new XmlManager();
@@ -70,6 +71,7 @@ public class SuspectListVw extends ViewPart {
 		viewer.setLabelProvider(new ViewLabelProvider());
 		getSite().setSelectionProvider(viewer);
 		viewer.setInput(getElements());
+		*/
 	}
 
 	/**

@@ -1,4 +1,4 @@
 Nikolay:
-	Test branching out
-	1. run FlowDroidExecutor in a handler thourh Manager.
-	2. add a list in a view.
+	1. add a list in a view.
+	2. show results of FlowDriod execution in the list.
+	3. click sinks and open relative java source.
