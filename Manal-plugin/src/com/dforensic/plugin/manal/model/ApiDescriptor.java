@@ -205,6 +205,20 @@ public class ApiDescriptor {
 		return false;
 	}
 	
+	public SinkInfo getSinkInfo() {
+		if (mRootSink != null) {
+			return mRootSink.get();
+		}
+		return null;
+	}
+	
+	public SourceInfo getSourceInfo() {
+		if (mRootSource != null) {
+			return mRootSource.get();
+		}
+		return null;
+	}
+	
 	public boolean isSource() {
 		if (mRootSource != null) {
 			return true;
