@@ -11,8 +11,12 @@ import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
+import soot.SootClass;
+import soot.SootMethod;
+import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowResults.SinkInfo;
 import soot.jimple.infoflow.InfoflowResults.SourceInfo;
+import soot.tagkit.LineNumberTag;
 
 /**
  * <p>
@@ -173,6 +177,7 @@ public class ApiDescriptor {
 	private List<WeakReference<ApiDescriptor>> mDependencyList = null;
 	private WeakReference<SinkInfo> mRootSink = null;
 	private WeakReference<SourceInfo> mRootSource = null;
+	private SootMethod mSootMethod = null;
 
 	public ApiDescriptor() {
 		
@@ -224,6 +229,87 @@ public class ApiDescriptor {
 			return true;
 		}
 		return false;
+	}
+	
+	public void setSootMethod(SootMethod method) {
+		mSootMethod = method;
+	}
+	
+	public String getClassNameFromSoot() {
+		if (mSootMethod != null) {
+			SootClass sootClass = mSootMethod.getDeclaringClass();
+			if (sootClass != null) {
+				String className = sootClass.getJavaStyleName();
+				if (className != null) {
+					// get only name without package.
+					String packageName = getPackageNameFromSoot();
+					if (packageName != null) {
+						if (className.contains(packageName)) {
+							return className.substring(packageName.length(),
+									className.length());
+						}
+					}
+					System.out.println("Problems to find package in class name.");
+					int ind = className.lastIndexOf('.');
+					if (ind != -1) {
+						return className.substring(ind,
+								className.length());
+					} else {
+						return className;
+					}
+				} else {
+					System.err.println("Can't get class name. It is not initialized in " +
+							"SootClass.");
+					return null;
+				}
+			} else {
+				System.err.println("Can't get class name. SootClass is not initialized.");
+				return null;
+			} 
+		} else {
+			System.err.println("Can't get class name. SootMethod is not initialized.");
+			return null;
+		}
+	}
+	
+	public String getPackageNameFromSoot() {
+		if (mSootMethod != null) {
+			SootClass sootClass = mSootMethod.getDeclaringClass();
+			if (sootClass != null) {
+				return sootClass.getJavaPackageName();
+			} else {
+				System.err.println("Can't get package name. SootClass is not initialized.");
+				return null;
+			} 
+		} else {
+			System.err.println("Can't get package name. SootMethod is not initialized.");
+			return null;
+		}
+	}
+	
+	public int getLineNumFromSoot() {
+		Stmt context = null;
+		if (mRootSink != null) {
+			SinkInfo sinkInfo = mRootSink.get();
+			if (sinkInfo != null) {
+				context = sinkInfo.getContext();
+			}
+		} else {
+			if (mRootSource != null) {
+				SourceInfo sourceInfo = mRootSource.get();
+				if (sourceInfo != null) {
+					context = sourceInfo.getContext();
+				}
+			}
+		}
+		
+		if (context == null) {
+			System.err.println("Context was not obtained neither from Sink nor from Source.");
+			return -1;
+		}
+		
+		if (context.hasTag("LineNumberTag"))
+            sb.append(" on line ").append(((LineNumberTag)context.getTag("LineNumberTag")).getLineNumber());
 	}
 	
 	public ApiDescriptor(MethodInvocation method) {
@@ -490,32 +576,42 @@ public class ApiDescriptor {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		if (mMethodType.equals(MethodType.CONSTRUCTOR)) {
-			sb.append("constructor\n");
-		}
-		if (mReturnType != null) {
-			sb.append(mReturnType).append(" ");
-		}
-		if (mReturnValue != null) {
-			sb.append("[").append(mReturnValue).append("]")
-				.append(" ");
-		}
-		if (mPackageName != null) {
-			sb.append(mPackageName).append(".");
-		}
-		if (mClassName != null) {
-			sb.append(mClassName).append(".");
-		}
-		if (mMethodName != null) {
-			sb.append(mMethodName).append("(\n");
-		}
-		if (mParams != null) {
-			for (ParameterDescriptor param : mParams) {
-				sb.append("\t").append(param.toString()).append("\n");
+		if (mRootSink != null) {
+			SinkInfo sinkInfo = mRootSink.get();
+			if (sinkInfo != null) {
+				sb.append(sinkInfo.toString());
+			} else {
+				System.err
+						.println("Discovered sink does not include information.");
 			}
-		}
-		if (mMethodName != null) {
-			sb.append(")\n");
+		} else {
+			if (mMethodType.equals(MethodType.CONSTRUCTOR)) {
+				sb.append("constructor\n");
+			}
+			if (mReturnType != null) {
+				sb.append(mReturnType).append(" ");
+			}
+			if (mReturnValue != null) {
+				sb.append("[").append(mReturnValue).append("]")
+					.append(" ");
+			}
+			if (mPackageName != null) {
+				sb.append(mPackageName).append(".");
+			}
+			if (mClassName != null) {
+				sb.append(mClassName).append(".");
+			}
+			if (mMethodName != null) {
+				sb.append(mMethodName).append("(\n");
+			}
+			if (mParams != null) {
+				for (ParameterDescriptor param : mParams) {
+					sb.append("\t").append(param.toString()).append("\n");
+				}
+			}
+			if (mMethodName != null) {
+				sb.append(")\n");
+			}
 		}
 		
 		return sb.toString();

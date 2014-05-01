@@ -75,11 +75,13 @@ public class FlowDroidExecutor {
 			} else {
 				for (SinkInfo sink : results.getResults().keySet()) {
 					ApiDescriptor sinkDesc = new ApiDescriptor(sink);
+					sinkDesc.setSootMethod(cfg.getMethodOf(sink.getContext()));
 					mSinks.add(sinkDesc);
 					print("Found a flow to sink " + sink
 							+ ", from the following sources:");
 					for (SourceInfo source : results.getResults().get(sink)) {
 						ApiDescriptor sourceDesc = new ApiDescriptor(source);
+						sourceDesc.setSootMethod(cfg.getMethodOf(source.getContext()));
 						// sourceDesc.addDependency(sinkDesc);
 						sinkDesc.addDependency(sourceDesc);
 						// mSources.add(sourceDesc);
@@ -112,12 +114,12 @@ public class FlowDroidExecutor {
 
 	private boolean stopAfterFirstFlow = false;
 	private boolean implicitFlows = false;
-	private boolean staticTracking = true;
-	private boolean enableCallbacks = true;
-	private boolean enableExceptions = true;
+	private boolean staticTracking = false; // true;
+	private boolean enableCallbacks = false; // true;
+	private boolean enableExceptions = false; // true;
 	private int accessPathLength = 5;
 	private LayoutMatchingMode layoutMatchingMode = LayoutMatchingMode.MatchSensitiveOnly;
-	private boolean flowSensitiveAliasing = true;
+	private boolean flowSensitiveAliasing = false; // true;
 	private boolean computeResultPaths = true;
 	private boolean aggressiveTaintWrapper = false;
 

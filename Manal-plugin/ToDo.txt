@@ -1,4 +1,5 @@
 Nikolay:
-	1. add a list in a view.
-	2. show results of FlowDriod execution in the list.
-	3. click sinks and open relative java source.
+	1. click sinks and open relative java source.
+		- callback from view to manager
+		- extract file and line -> Use SearchSuspiciousApi in Editor
+	2. Update class diagram to shod dependencies
