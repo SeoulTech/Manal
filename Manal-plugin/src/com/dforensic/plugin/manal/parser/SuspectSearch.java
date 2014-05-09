@@ -25,6 +25,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.Statement;
+import org.eclipse.jdt.internal.core.JavaElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +69,17 @@ public class SuspectSearch {
 	public List<ApiDescriptor> getMethodDescriptions() {
 		return mMethodDetails;
 	}
+	
+	/**
+	 * If JavaElement in the project is found
+	 * for the passed API it is set as a memeber
+	 * for it. 
+	 */
+	public void getJavaElementForApi(ApiDescriptor api) {
+		mFilterMethods = new ArrayList<ApiDescriptor>();
+		mFilterMethods.add(api);
+		run();
+	}
 
 	private void extractProjectInfo(IProject project) throws CoreException,
 			JavaModelException {
@@ -82,30 +94,52 @@ public class SuspectSearch {
 	private void extractPackageInfos(IJavaProject javaProject)
 			throws JavaModelException {
 		IPackageFragment[] packages = javaProject.getPackageFragments();
-		for (IPackageFragment mypackage : packages) {
-			// Package fragments include all packages in the classpath.
-			// We will only look at the package from the source folder.
-			// K_BINARY would include also included JARS, e.g. rt.jar
-			if (mypackage.getKind() == IPackageFragmentRoot.K_SOURCE) {
-				System.out.println("Package " + mypackage.getElementName());
-				createAST(mypackage);
-				// extractClassInfo(mypackage);
+		for (IPackageFragment packageSearched : packages) {
+			if (mFilterMethods != null) {
+				for (ApiDescriptor api : mFilterMethods) {
+					// Package fragments include all packages in the classpath.
+					// We will only look at the package from the source folder.
+					// K_BINARY would include also included JARS, e.g. rt.jar
+					String packageName = api.getPackageNameFromSoot();
+					if (packageName != null) {
+						if ((packageSearched.getKind() == IPackageFragmentRoot.K_SOURCE) &&
+								packageName.equals(packageSearched.getElementName())) {
+							System.out.println("Package " + packageSearched.getElementName());
+							createAST(packageSearched, api);
+							// extractClassInfo(mypackage);
+						}
+					} else {
+						System.err.println("Package name is NULL for " + 
+								api.toString());
+					}
+				}
+			} else {
+				System.err.println("Methods for search are not initialized. " +
+						"mFilterMethods is NULL.");
 			}
 		}
 	}
 
-	private void createAST(IPackageFragment mypackage)
+	private void createAST(IPackageFragment packageSearched, ApiDescriptor methodSearched)
 			throws JavaModelException {
-		for (ICompilationUnit unit : mypackage.getCompilationUnits()) {
-			// now create the AST for the ICompilationUnits
-			final CompilationUnit parse = parse(unit);
-			MethodVisitor visitor = new MethodVisitor();
-			parse.accept(visitor);
-
-			for (MethodDeclaration method : visitor.getMethods()) {
-				System.out.print("Method name: " + method.getName()
-						+ " Return type: " + method.getReturnType2());
-				extractStatements(parse, method);
+		String className = methodSearched.getClassNameFromSoot();
+		if (className == null) {
+			System.err.println("Can't search. Class name is NULL.");
+			return;
+		}
+		for (ICompilationUnit unit : packageSearched.getCompilationUnits()) {
+			String unitName = unit.getElementName();
+			if ((unitName != null) && unitName.contains(className)) {
+				// now create the AST for the ICompilationUnits
+				final CompilationUnit parse = parse(unit);
+				MethodVisitor visitor = new MethodVisitor();
+				parse.accept(visitor);
+	
+				for (MethodDeclaration method : visitor.getMethods()) {
+					System.out.print("Method name: " + method.getName()
+							+ " Return type: " + method.getReturnType2());
+					extractStatements(parse, method, methodSearched);
+				}
 			}
 		}
 	}
@@ -125,7 +159,12 @@ public class SuspectSearch {
 		return (CompilationUnit) parser.createAST(null); // parse
 	}
 
-	private void extractStatements(CompilationUnit cu, MethodDeclaration method) {
+	private void extractStatements(CompilationUnit cu, MethodDeclaration method,
+			ApiDescriptor methodSearched) {
+		String methodName = methodSearched.getMethodNameFromSoot();
+		if (methodName != null) {
+			System.err.println("Can't search a method. Method name is NULL.");
+		}
 		Block body = method.getBody();
 		if (body != null) {
 			for (Statement smt : (List<Statement>) body.statements()) {
@@ -134,7 +173,11 @@ public class SuspectSearch {
 							.getExpression();
 					if (esn instanceof MethodInvocation) {
 						MethodInvocation inv = (MethodInvocation) esn;
-						filterMethod(cu, inv);
+						if (methodName.equals(inv.getName())) {
+							methodSearched.setCompilationUnit(cu);
+						}
+						// filterMethod(cu, inv);
+						
 						// SimpleName name = inv.getName();
 						// ApiDescriptor apiDesc = new ApiDescriptor();
 						// apiDesc.setMethodName(name.getIdentifier());

@@ -1,5 +1,3 @@
 Nikolay:
-	1. click sinks and open relative java source.
-		- callback from view to manager
-		- extract file and line -> Use SearchSuspiciousApi in Editor
-	2. Update class diagram to shod dependencies
+	1. Position in an editor on the line.
+	2. Update class diagram to show dependencies

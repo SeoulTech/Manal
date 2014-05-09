@@ -25,10 +25,9 @@ public class SuspectCodeEd {
 		if (apiDesc != null) {
 			SinkInfo sinkInfo = apiDesc.getSinkInfo();
 			if (sinkInfo != null) {
-				sinkInfo.getContext();
-				if (context.hasTag("LineNumberTag"))
-	                sb.append(" on line ").append(((LineNumberTag)context.getTag("LineNumberTag")).getLineNumber());
-
+				SuspectSearch search = new SuspectSearch();
+				search.getJavaElementForApi(apiDesc);
+				openJavaSourceEditor(apiDesc);
 			} else {
 				System.err.println("No content for the method to display." +
 						" SinkInfo is NULL.");
@@ -39,11 +38,9 @@ public class SuspectCodeEd {
 		}
 	}
 	
-	public void openJavaSourceEditor() {
-		/*
-		List<ApiDescriptor> apiList = mParser.getMethodDescriptions();
-		if ((apiList != null) && !apiList.isEmpty()) {
-			CompilationUnit cu = apiList.get(0).getCompilatioinUnit();
+	public void openJavaSourceEditor(ApiDescriptor api) {
+		if (api != null) {
+			CompilationUnit cu = api.getCompilatioinUnit();
 			if (cu != null) {
 				try {
 					JavaUI.openInEditor(cu.getJavaElement());
@@ -52,8 +49,9 @@ public class SuspectCodeEd {
 					e.printStackTrace();
 				}
 			}
+		} else {
+			System.err.println("Can't open java editor. ApiDescriptor is NULL.");
 		}
-		*/
 	}
 	
 	private void searchSuspect() {

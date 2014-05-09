@@ -174,9 +174,9 @@ public class ApiDescriptor {
 	/** Constructor or a normal method. */
 	private MethodType mMethodType = MethodType.NORMAL;
 	
-	private List<WeakReference<ApiDescriptor>> mDependencyList = null;
-	private WeakReference<SinkInfo> mRootSink = null;
-	private WeakReference<SourceInfo> mRootSource = null;
+	private List<ApiDescriptor> mDependencyList = null;
+	private SinkInfo mRootSink = null;
+	private SourceInfo mRootSource = null;
 	private SootMethod mSootMethod = null;
 
 	public ApiDescriptor() {
@@ -184,22 +184,22 @@ public class ApiDescriptor {
 	}
 	
 	public ApiDescriptor(SinkInfo sinkInfo) {
-		mRootSink = new WeakReference<SinkInfo>(sinkInfo);
+		mRootSink = sinkInfo;
 	}
 	
 	public ApiDescriptor(SourceInfo sourceInfo) {
-		mRootSource = new WeakReference<SourceInfo>(sourceInfo);
+		mRootSource = sourceInfo;
 	}
 	
 	
 	public void addDependency(ApiDescriptor method) {
 		if (mDependencyList == null) {
-			mDependencyList = new ArrayList<WeakReference<ApiDescriptor>>();
+			mDependencyList = new ArrayList<ApiDescriptor>();
 		}
-		mDependencyList.add(new WeakReference<ApiDescriptor>(method));
+		mDependencyList.add(method);
 	}		
 	
-	public List<WeakReference<ApiDescriptor>> getDependencyList() {
+	public List<ApiDescriptor> getDependencyList() {
 		return mDependencyList;
 	}
 		
@@ -211,17 +211,11 @@ public class ApiDescriptor {
 	}
 	
 	public SinkInfo getSinkInfo() {
-		if (mRootSink != null) {
-			return mRootSink.get();
-		}
-		return null;
+		return mRootSink;
 	}
 	
 	public SourceInfo getSourceInfo() {
-		if (mRootSource != null) {
-			return mRootSource.get();
-		}
-		return null;
+		return mRootSource;
 	}
 	
 	public boolean isSource() {
@@ -287,29 +281,35 @@ public class ApiDescriptor {
 		}
 	}
 	
+	public String getMethodNameFromSoot() {
+		mRootSink.getSink(). see toString
+		if (mSootMethod != null) {
+			return mSootMethod.getName();
+		} else {
+			System.err.println("Can't get method name. SootMethod is not initialized.");
+			return null;
+		}
+	}
+	
 	public int getLineNumFromSoot() {
 		Stmt context = null;
 		if (mRootSink != null) {
-			SinkInfo sinkInfo = mRootSink.get();
-			if (sinkInfo != null) {
-				context = sinkInfo.getContext();
-			}
-		} else {
-			if (mRootSource != null) {
-				SourceInfo sourceInfo = mRootSource.get();
-				if (sourceInfo != null) {
-					context = sourceInfo.getContext();
-				}
-			}
+			context = mRootSink.getContext();
+		} else if (mRootSource != null) {
+			context = mRootSource.getContext();
 		}
+		
 		
 		if (context == null) {
 			System.err.println("Context was not obtained neither from Sink nor from Source.");
 			return -1;
 		}
 		
-		if (context.hasTag("LineNumberTag"))
-            sb.append(" on line ").append(((LineNumberTag)context.getTag("LineNumberTag")).getLineNumber());
+		if (context.hasTag("LineNumberTag")) {
+            return ((LineNumberTag)context.getTag("LineNumberTag")).getLineNumber();
+		}
+		
+		return -1;
 	}
 	
 	public ApiDescriptor(MethodInvocation method) {
@@ -577,13 +577,7 @@ public class ApiDescriptor {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		if (mRootSink != null) {
-			SinkInfo sinkInfo = mRootSink.get();
-			if (sinkInfo != null) {
-				sb.append(sinkInfo.toString());
-			} else {
-				System.err
-						.println("Discovered sink does not include information.");
-			}
+			sb.append(mRootSink.toString());
 		} else {
 			if (mMethodType.equals(MethodType.CONSTRUCTOR)) {
 				sb.append("constructor\n");
