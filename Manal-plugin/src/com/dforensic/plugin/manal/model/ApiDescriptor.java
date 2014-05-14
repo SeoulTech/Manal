@@ -13,6 +13,9 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 
 import soot.SootClass;
 import soot.SootMethod;
+import soot.SootMethodRef;
+import soot.Value;
+import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowResults.SinkInfo;
 import soot.jimple.infoflow.InfoflowResults.SourceInfo;
@@ -282,13 +285,16 @@ public class ApiDescriptor {
 	}
 	
 	public String getMethodNameFromSoot() {
-		mRootSink.getSink(). see toString
-		if (mSootMethod != null) {
-			return mSootMethod.getName();
-		} else {
-			System.err.println("Can't get method name. SootMethod is not initialized.");
-			return null;
+		Value sink = mRootSink.getSink();
+		if (sink instanceof InvokeExpr) {
+			InvokeExpr expr = (InvokeExpr) sink;
+			SootMethodRef exprRef = expr.getMethodRef(); 
+			if (exprRef != null) {
+				return exprRef.name();
+			}
 		}
+		System.err.println("Can't get method name. A problem to extract it from InvokeExpr.");
+		return null;
 	}
 	
 	public int getLineNumFromSoot() {

@@ -1,3 +1,4 @@
 Nikolay:
 	1. Position in an editor on the line.
+		-> check ApiDescriptor.getMethodNameFromSoot()
 	2. Update class diagram to show dependencies
