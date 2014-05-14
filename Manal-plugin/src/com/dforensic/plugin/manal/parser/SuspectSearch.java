@@ -132,14 +132,16 @@ public class SuspectSearch {
 			if ((unitName != null) && unitName.contains(className)) {
 				// now create the AST for the ICompilationUnits
 				final CompilationUnit parse = parse(unit);
-				MethodVisitor visitor = new MethodVisitor();
-				parse.accept(visitor);
-	
-				for (MethodDeclaration method : visitor.getMethods()) {
-					System.out.print("Method name: " + method.getName()
-							+ " Return type: " + method.getReturnType2());
-					extractStatements(parse, method, methodSearched);
-				}
+				methodSearched.setCompilationUnit(parse);
+				return;
+//				MethodVisitor visitor = new MethodVisitor();
+//				parse.accept(visitor);
+//	
+//				for (MethodDeclaration method : visitor.getMethods()) {
+//					System.out.print("Method name: " + method.getName()
+//							+ " Return type: " + method.getReturnType2());
+//					extractStatements(parse, method, methodSearched);
+//				}
 			}
 		}
 	}
@@ -162,8 +164,9 @@ public class SuspectSearch {
 	private void extractStatements(CompilationUnit cu, MethodDeclaration method,
 			ApiDescriptor methodSearched) {
 		String methodName = methodSearched.getMethodNameFromSoot();
-		if (methodName != null) {
+		if (methodName == null) {
 			System.err.println("Can't search a method. Method name is NULL.");
+			return;
 		}
 		Block body = method.getBody();
 		if (body != null) {
@@ -175,6 +178,7 @@ public class SuspectSearch {
 						MethodInvocation inv = (MethodInvocation) esn;
 						if (methodName.equals(inv.getName())) {
 							methodSearched.setCompilationUnit(cu);
+							return;
 						}
 						// filterMethod(cu, inv);
 						
