@@ -1,8 +1,6 @@
 Nikolay:
-	1. Position in an editor on the line.
-		-> search only a class (line number can be known from FlowDroid)
-		-> finish search when a method is found
-		-> extractStatements return found value
-		-> extractStatements go deeper to statements (not only MethodInvoke)
 	2. Update class diagram to show dependencies
 	3. Describe FlowDroid soot and JDT Java objects structure.
+	4. Make perspective.
+	5. Check malware DB.
+	6. Get api description.

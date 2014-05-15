@@ -55,16 +55,20 @@ public class SuspectSearch {
 		// Loop over all projects
 		for (IProject project : projects) {
 			try {
-				extractProjectInfo(project);
+				boolean res = extractProjectInfo(project);
+				if (res) {
+					System.out.println("The search is achieved.");
+					return;
+				}
 			} catch (CoreException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	public void setSuspectApi(List<ApiDescriptor> apiList) {
-		mFilterMethods = apiList;
-	}
+//	public void setSuspectApi(List<ApiDescriptor> apiList) {
+//		mFilterMethods = apiList;
+//	}
 
 	public List<ApiDescriptor> getMethodDescriptions() {
 		return mMethodDetails;
@@ -81,17 +85,23 @@ public class SuspectSearch {
 		run();
 	}
 
-	private void extractProjectInfo(IProject project) throws CoreException,
+	private boolean extractProjectInfo(IProject project) throws CoreException,
 			JavaModelException {
 		System.out.println("Working in project " + project.getName());
 		// check if we have a Java project
 		if (project.isNatureEnabled(JavaCore.NATURE_ID)) {
 			IJavaProject javaProject = JavaCore.create(project);
-			extractPackageInfos(javaProject);
+			if (extractPackageInfos(javaProject)) {
+				return true;
+			}
+		} else {
+			System.err.println("This is not Java project.");
 		}
+		
+		return false;
 	}
 
-	private void extractPackageInfos(IJavaProject javaProject)
+	private boolean extractPackageInfos(IJavaProject javaProject)
 			throws JavaModelException {
 		IPackageFragment[] packages = javaProject.getPackageFragments();
 		for (IPackageFragment packageSearched : packages) {
@@ -105,7 +115,9 @@ public class SuspectSearch {
 						if ((packageSearched.getKind() == IPackageFragmentRoot.K_SOURCE) &&
 								packageName.equals(packageSearched.getElementName())) {
 							System.out.println("Package " + packageSearched.getElementName());
-							createAST(packageSearched, api);
+							if (createAST(packageSearched, api)) {
+								return true;
+							}
 							// extractClassInfo(mypackage);
 						}
 					} else {
@@ -118,14 +130,15 @@ public class SuspectSearch {
 						"mFilterMethods is NULL.");
 			}
 		}
+		return false;
 	}
 
-	private void createAST(IPackageFragment packageSearched, ApiDescriptor methodSearched)
+	private boolean createAST(IPackageFragment packageSearched, ApiDescriptor methodSearched)
 			throws JavaModelException {
 		String className = methodSearched.getClassNameFromSoot();
 		if (className == null) {
 			System.err.println("Can't search. Class name is NULL.");
-			return;
+			return false;
 		}
 		for (ICompilationUnit unit : packageSearched.getCompilationUnits()) {
 			String unitName = unit.getElementName();
@@ -133,7 +146,7 @@ public class SuspectSearch {
 				// now create the AST for the ICompilationUnits
 				final CompilationUnit parse = parse(unit);
 				methodSearched.setCompilationUnit(parse);
-				return;
+				return true;
 //				MethodVisitor visitor = new MethodVisitor();
 //				parse.accept(visitor);
 //	
@@ -144,6 +157,7 @@ public class SuspectSearch {
 //				}
 			}
 		}
+		return false;
 	}
 
 	/**
@@ -175,6 +189,8 @@ public class SuspectSearch {
 					Expression esn = ((ExpressionStatement) smt)
 							.getExpression();
 					if (esn instanceof MethodInvocation) {
+						// TODO when refactoring
+						// go deeper to statements (not only MethodInvoke)
 						MethodInvocation inv = (MethodInvocation) esn;
 						if (methodName.equals(inv.getName())) {
 							methodSearched.setCompilationUnit(cu);
