@@ -2,10 +2,17 @@ package com.dforensic.plugin.manal.views;
 
 import java.util.List;
 
+import org.eclipse.jdt.core.IBuffer.ITextEditCapability;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jdt.ui.JavaUI;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.texteditor.ITextEditor;
 
 import soot.jimple.infoflow.InfoflowResults.SinkInfo;
 import soot.tagkit.LineNumberTag;
@@ -43,8 +50,18 @@ public class SuspectCodeEd {
 			CompilationUnit cu = api.getCompilatioinUnit();
 			if (cu != null) {
 				try {
-					JavaUI.openInEditor(cu.getJavaElement());
-				} catch (PartInitException | JavaModelException e) {
+					// According to the guide
+					// http://eclipsesnippets.blogspot.kr/2008/06/programmatically-opening-editor.html
+					ITextEditor editor = (ITextEditor)JavaUI.openInEditor(cu.getJavaElement());
+					int line = api.getLineNumFromSoot();
+					
+					if (line > 0) {
+						IDocument document= editor.getDocumentProvider().getDocument(editor.getEditorInput());
+						editor.selectAndReveal(document.getLineOffset(line - 1), document.getLineLength(line-1));
+					} else {
+						System.err.println("Not valid line number. It is not positive.");
+					}
+				} catch (PartInitException | JavaModelException | BadLocationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
