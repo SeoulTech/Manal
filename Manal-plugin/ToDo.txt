@@ -1,4 +1,5 @@
 Nikolay:
 	1. Check malware DB.
 	2. Make perspective.
+		- resize SuspectList
 	3. Get api description from android frmw.
