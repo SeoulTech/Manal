@@ -11,8 +11,15 @@ import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
+import soot.SootClass;
+import soot.SootMethod;
+import soot.SootMethodRef;
+import soot.Value;
+import soot.jimple.InvokeExpr;
+import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowResults.SinkInfo;
 import soot.jimple.infoflow.InfoflowResults.SourceInfo;
+import soot.tagkit.LineNumberTag;
 
 /**
  * <p>
@@ -170,31 +177,32 @@ public class ApiDescriptor {
 	/** Constructor or a normal method. */
 	private MethodType mMethodType = MethodType.NORMAL;
 	
-	private List<WeakReference<ApiDescriptor>> mDependencyList = null;
-	private WeakReference<SinkInfo> mRootSink = null;
-	private WeakReference<SourceInfo> mRootSource = null;
+	private List<ApiDescriptor> mDependencyList = null;
+	private SinkInfo mRootSink = null;
+	private SourceInfo mRootSource = null;
+	private SootMethod mSootMethod = null;
 
 	public ApiDescriptor() {
 		
 	}
 	
 	public ApiDescriptor(SinkInfo sinkInfo) {
-		mRootSink = new WeakReference<SinkInfo>(sinkInfo);
+		mRootSink = sinkInfo;
 	}
 	
 	public ApiDescriptor(SourceInfo sourceInfo) {
-		mRootSource = new WeakReference<SourceInfo>(sourceInfo);
+		mRootSource = sourceInfo;
 	}
 	
 	
 	public void addDependency(ApiDescriptor method) {
 		if (mDependencyList == null) {
-			mDependencyList = new ArrayList<WeakReference<ApiDescriptor>>();
+			mDependencyList = new ArrayList<ApiDescriptor>();
 		}
-		mDependencyList.add(new WeakReference<ApiDescriptor>(method));
+		mDependencyList.add(method);
 	}		
 	
-	public List<WeakReference<ApiDescriptor>> getDependencyList() {
+	public List<ApiDescriptor> getDependencyList() {
 		return mDependencyList;
 	}
 		
@@ -206,17 +214,11 @@ public class ApiDescriptor {
 	}
 	
 	public SinkInfo getSinkInfo() {
-		if (mRootSink != null) {
-			return mRootSink.get();
-		}
-		return null;
+		return mRootSink;
 	}
 	
 	public SourceInfo getSourceInfo() {
-		if (mRootSource != null) {
-			return mRootSource.get();
-		}
-		return null;
+		return mRootSource;
 	}
 	
 	public boolean isSource() {
@@ -224,6 +226,96 @@ public class ApiDescriptor {
 			return true;
 		}
 		return false;
+	}
+	
+	public void setSootMethod(SootMethod method) {
+		mSootMethod = method;
+	}
+	
+	public String getClassNameFromSoot() {
+		if (mSootMethod != null) {
+			SootClass sootClass = mSootMethod.getDeclaringClass();
+			if (sootClass != null) {
+				String className = sootClass.getJavaStyleName();
+				if (className != null) {
+					// get only name without package.
+					String packageName = getPackageNameFromSoot();
+					if (packageName != null) {
+						if (className.contains(packageName)) {
+							return className.substring(packageName.length(),
+									className.length());
+						}
+					}
+					System.out.println("Problems to find package in class name.");
+					int ind = className.lastIndexOf('.');
+					if (ind != -1) {
+						return className.substring(ind,
+								className.length());
+					} else {
+						return className;
+					}
+				} else {
+					System.err.println("Can't get class name. It is not initialized in " +
+							"SootClass.");
+					return null;
+				}
+			} else {
+				System.err.println("Can't get class name. SootClass is not initialized.");
+				return null;
+			} 
+		} else {
+			System.err.println("Can't get class name. SootMethod is not initialized.");
+			return null;
+		}
+	}
+	
+	public String getPackageNameFromSoot() {
+		if (mSootMethod != null) {
+			SootClass sootClass = mSootMethod.getDeclaringClass();
+			if (sootClass != null) {
+				return sootClass.getJavaPackageName();
+			} else {
+				System.err.println("Can't get package name. SootClass is not initialized.");
+				return null;
+			} 
+		} else {
+			System.err.println("Can't get package name. SootMethod is not initialized.");
+			return null;
+		}
+	}
+	
+	public String getMethodNameFromSoot() {
+		Value sink = mRootSink.getSink();
+		if (sink instanceof InvokeExpr) {
+			InvokeExpr expr = (InvokeExpr) sink;
+			SootMethodRef exprRef = expr.getMethodRef(); 
+			if (exprRef != null) {
+				return exprRef.name();
+			}
+		}
+		System.err.println("Can't get method name. A problem to extract it from InvokeExpr.");
+		return null;
+	}
+	
+	public int getLineNumFromSoot() {
+		Stmt context = null;
+		if (mRootSink != null) {
+			context = mRootSink.getContext();
+		} else if (mRootSource != null) {
+			context = mRootSource.getContext();
+		}
+		
+		
+		if (context == null) {
+			System.err.println("Context was not obtained neither from Sink nor from Source.");
+			return -1;
+		}
+		
+		if (context.hasTag("LineNumberTag")) {
+            return ((LineNumberTag)context.getTag("LineNumberTag")).getLineNumber();
+		}
+		
+		return -1;
 	}
 	
 	public ApiDescriptor(MethodInvocation method) {
@@ -490,32 +582,36 @@ public class ApiDescriptor {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		if (mMethodType.equals(MethodType.CONSTRUCTOR)) {
-			sb.append("constructor\n");
-		}
-		if (mReturnType != null) {
-			sb.append(mReturnType).append(" ");
-		}
-		if (mReturnValue != null) {
-			sb.append("[").append(mReturnValue).append("]")
-				.append(" ");
-		}
-		if (mPackageName != null) {
-			sb.append(mPackageName).append(".");
-		}
-		if (mClassName != null) {
-			sb.append(mClassName).append(".");
-		}
-		if (mMethodName != null) {
-			sb.append(mMethodName).append("(\n");
-		}
-		if (mParams != null) {
-			for (ParameterDescriptor param : mParams) {
-				sb.append("\t").append(param.toString()).append("\n");
+		if (mRootSink != null) {
+			sb.append(mRootSink.toString());
+		} else {
+			if (mMethodType.equals(MethodType.CONSTRUCTOR)) {
+				sb.append("constructor\n");
 			}
-		}
-		if (mMethodName != null) {
-			sb.append(")\n");
+			if (mReturnType != null) {
+				sb.append(mReturnType).append(" ");
+			}
+			if (mReturnValue != null) {
+				sb.append("[").append(mReturnValue).append("]")
+					.append(" ");
+			}
+			if (mPackageName != null) {
+				sb.append(mPackageName).append(".");
+			}
+			if (mClassName != null) {
+				sb.append(mClassName).append(".");
+			}
+			if (mMethodName != null) {
+				sb.append(mMethodName).append("(\n");
+			}
+			if (mParams != null) {
+				for (ParameterDescriptor param : mParams) {
+					sb.append("\t").append(param.toString()).append("\n");
+				}
+			}
+			if (mMethodName != null) {
+				sb.append(")\n");
+			}
 		}
 		
 		return sb.toString();

@@ -1,4 +1,4 @@
 Nikolay:
-	1. add a list in a view.
-	2. show results of FlowDriod execution in the list.
-	3. click sinks and open relative java source.
+	1. Check malware DB.
+	2. Make perspective.
+	3. Get api description from android frmw.
