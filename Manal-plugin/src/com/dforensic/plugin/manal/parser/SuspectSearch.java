@@ -76,7 +76,7 @@ public class SuspectSearch {
 	
 	/**
 	 * If JavaElement in the project is found
-	 * for the passed API it is set as a memeber
+	 * for the passed API it is set as a member
 	 * for it. 
 	 */
 	public void getJavaElementForApi(ApiDescriptor api) {

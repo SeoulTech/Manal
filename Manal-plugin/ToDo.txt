@@ -1,6 +1,4 @@
 Nikolay:
-	2. Update class diagram to show dependencies
-	3. Describe FlowDroid soot and JDT Java objects structure.
-	4. Make perspective.
-	5. Check malware DB.
-	6. Get api description.
+	1. Check malware DB.
+	2. Make perspective.
+	3. Get api description from android frmw.
