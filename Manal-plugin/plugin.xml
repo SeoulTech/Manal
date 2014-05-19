@@ -76,5 +76,19 @@
         </command>
       </menuContribution>
    </extension>
-
+   <extension
+          point="org.eclipse.ui.newWizards">
+       <category
+             id="com.dforensic.plugin.manal"
+             name="Manal Wizards">
+       </category>
+       <wizard
+             category="com.dforensic.plugin.manal"
+             class="com.dforensic.plugin.manal.wizards.ManalNewWizard"
+             icon="icons/sample.gif"
+             id="com.dforensic.plugin.manal.wizards.ManalNewWizard"
+             name="New manal project">
+       </wizard>
+       
+    </extension>
 </plugin>
