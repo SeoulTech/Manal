@@ -2,29 +2,18 @@ package com.dforensic.plugin.manal.wizards;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.core.runtime.*;
-import org.eclipse.jface.operation.*;
 
-import java.lang.reflect.InvocationTargetException;
-
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.CoreException;
 
 import java.io.*;
 
-import org.eclipse.ui.*;
 import com.dforensic.plugin.manal.model.dataApkandProject;
 
 public class ManalNewWizard extends Wizard implements INewWizard {
-	private ManalNewWizardPage page;
-	private ISelection selection;
-	private static String apkName;
-	private static String projectName;
+	private WizardManalPropertiesPage page;
 	private dataApkandProject dap; 
 	public ManalNewWizard() {
 		super();
@@ -36,7 +25,7 @@ public class ManalNewWizard extends Wizard implements INewWizard {
 	 */
 
 	public void addPages() {
-		page = new ManalNewWizardPage(selection);
+		page = new WizardManalPropertiesPage();
 		addPage(page);
 	}
 
@@ -46,8 +35,8 @@ public class ManalNewWizard extends Wizard implements INewWizard {
 	 * using wizard as execution context.
 	 */
 	public boolean performFinish() {
-		final String containerName = page.getContainerName();
-		final String fileName = page.getFileName();
+		final String containerName = page.getProjectName();
+		final String fileName = page.getApkFileName();
 		System.out.println("test");
 	/*	IRunnableWithProgress op = new IRunnableWithProgress() {
 			public void run(IProgressMonitor monitor) throws InvocationTargetException {
@@ -138,6 +127,6 @@ public class ManalNewWizard extends Wizard implements INewWizard {
 	}
 
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		this.selection = selection;
+
 	}
 }
