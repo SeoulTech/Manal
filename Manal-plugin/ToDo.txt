@@ -4,12 +4,8 @@ Nikolay:
 	http://www.ibm.com/developerworks/ru/library/os-eclipse-custwiz/
 	- Fix no New items for the Suspect Analysis perspective
 	
-	1. Add a path to decompiled eclipse project (test)
-	// 2. Add a path to android framework
-	3. Import project
-	   http://stackoverflow.com/questions/12401297/programmatically-importing-an-existing-project-into-eclipse
-	   http://www.eclipse.org/forums/index.php/t/560903/
-	4. Add apk path as Premanent property to the project (in order to run flowdroid and look for the project later)    
+	1. Add a default path to the android framework (check if it's set up in eclipse)
+	2. Rename project
 	
 	===========General=======================
 	1. Check malware DB.

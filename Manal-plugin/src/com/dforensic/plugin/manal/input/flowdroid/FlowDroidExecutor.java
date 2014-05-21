@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dforensic.plugin.manal.model.ApiDescriptor;
+import com.dforensic.plugin.manal.model.ProjectProperties;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
@@ -426,10 +427,17 @@ public class FlowDroidExecutor {
 		// 		"D:\\Documents\\Research\\eclipse_plugin\\Manal\\PhoneDataLeakTest\\bin\\PhoneDataLeakTest.apk");
 		// mAndroidSdkPath = new String(
 		//		"D:\\Documents\\LGE MC 5PM 1PL\\android-sdk_r10-windows\\platforms");
-		mApkPath = new String(
-				"D:\\Workspaces\\SsSDK\\contest_dev\\Manal\\PhoneDataLeakTest\\bin\\PhoneDataLeakTest.apk");
-		mAndroidSdkPath = new String(
-				"D:\\Workspaces\\android-sdk\\platforms");
+		mApkPath = ProjectProperties.getApkNameVal();
+		mAndroidSdkPath = ProjectProperties.getAndroidPathVal();
+		
+		if (mApkPath == null) {
+			mApkPath = new String(
+					"D:\\Workspaces\\SsSDK\\contest_dev\\Manal\\PhoneDataLeakTest\\bin\\PhoneDataLeakTest.apk");
+		}
+		if (mAndroidSdkPath == null) {
+			mAndroidSdkPath = new String(
+					"D:\\Workspaces\\android-sdk\\platforms");
+		}
 		
 		if (mSinks != null) {
 			mSinks.clear();

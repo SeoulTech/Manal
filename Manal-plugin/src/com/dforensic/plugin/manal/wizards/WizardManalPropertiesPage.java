@@ -29,6 +29,7 @@ public class WizardManalPropertiesPage extends WizardPage {
 	private Text projectNameText;
 	private Text apkFileText;
 	private Text sourcePrjDirectoryText;
+	private Text androidDirectoryText;
 	private Composite parent;
 
 	public Composite getParent() {
@@ -116,6 +117,22 @@ public class WizardManalPropertiesPage extends WizardPage {
 				handleBrowseDecompiledSource();
 			}
 		});
+		
+		// Input android platform path
+		label = new Label(container, SWT.NULL);
+		label.setText("An&droid path:");
+				
+		androidDirectoryText = new Text(container, SWT.BORDER | SWT.SINGLE);
+		gd = new GridData(GridData.FILL_HORIZONTAL);
+		androidDirectoryText.setLayoutData(gd);
+		
+		Button browseAndroidDirectoryBtn = new Button(container, SWT.PUSH);
+		browseAndroidDirectoryBtn.setText("Browse...");
+		browseAndroidDirectoryBtn.addSelectionListener(new SelectionAdapter() {
+					public void widgetSelected(SelectionEvent e) {
+						handleBrowseAndroidPlatform();
+					}
+				});
 
 		dialogChanged();
 		setControl(container);
@@ -123,6 +140,26 @@ public class WizardManalPropertiesPage extends WizardPage {
 
 	// Refer to the following FAQ
 	// http://wiki.eclipse.org/FAQ_How_do_I_prompt_the_user_to_select_a_file_or_a_directory%3F
+	private void handleBrowseAndroidPlatform() {
+		//get object which represents the workspace  
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();  
+		//get location of workspace (java.io.File)  
+		File workspaceDirectory = workspace.getRoot().getLocation().toFile();
+		String workspaceDirPath = null;
+		if (workspaceDirectory != null) {
+			workspaceDirPath = workspaceDirectory.getPath();
+		}
+		DirectoryDialog dirDialog = new DirectoryDialog(getShell());
+		dirDialog.setText("Select Android Platform Directory");
+		dirDialog.setFilterPath(workspaceDirPath);
+		String selected = dirDialog.open();
+		System.out.println(selected); // decompiled project
+
+		if (selected != null) {
+			androidDirectoryText.setText(selected);
+		}
+	}
+	
 	private void handleBrowseDecompiledSource() {
 		//get object which represents the workspace  
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();  
@@ -206,5 +243,9 @@ public class WizardManalPropertiesPage extends WizardPage {
 	
 	public String getDecompiledSourceDirectoryName() {
 		return sourcePrjDirectoryText.getText();
+	}
+	
+	public String getAndroidDirectoryName() {
+		return androidDirectoryText.getText();
 	}
 }

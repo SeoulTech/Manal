@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
@@ -17,6 +18,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.WorkbenchException;
 
+import com.dforensic.plugin.manal.model.ProjectProperties;
 import com.dforensic.plugin.manal.perspective.SuspectAnalysisPerspective;
 
 /**
@@ -57,6 +59,10 @@ public class NewManalProjectWizard extends Wizard implements INewWizard,
 
 	@Override
 	public boolean performFinish() {
+		ProjectProperties.setApkNameVal(propertiesPage.getApkFileName());
+		ProjectProperties.setPrjNameVal(propertiesPage.getProjectName());
+		ProjectProperties.setAndroidPathVal(propertiesPage.getAndroidDirectoryName());
+		
 		boolean res = importProject();
 		
 		if (res) {
@@ -81,6 +87,16 @@ public class NewManalProjectWizard extends Wizard implements INewWizard,
 						.getProject(description.getName());
 				project.create(description, null);
 				project.open(null);
+				
+				project.setPersistentProperty(new QualifiedName(ProjectProperties.QUALIFIER,
+						ProjectProperties.getApkNameKey()),
+						ProjectProperties.getApkNameVal());
+				project.setPersistentProperty(new QualifiedName(ProjectProperties.QUALIFIER,
+						ProjectProperties.getPrjNameKey()),
+						ProjectProperties.getPrjNameVal());
+				project.setPersistentProperty(new QualifiedName(ProjectProperties.QUALIFIER,
+						ProjectProperties.getAndroidPathKey()),
+						ProjectProperties.getAndroidPathVal());
 
 				return true;
 

@@ -1,12 +1,14 @@
 package com.dforensic.plugin.manal.parser;
 
 import com.dforensic.plugin.manal.model.ApiDescriptor;
+import com.dforensic.plugin.manal.model.ProjectProperties;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMethod;
@@ -55,10 +57,17 @@ public class SuspectSearch {
 		// Loop over all projects
 		for (IProject project : projects) {
 			try {
-				boolean res = extractProjectInfo(project);
-				if (res) {
-					System.out.println("The search is achieved.");
-					return;
+				String prjName = project.getPersistentProperty(new QualifiedName(ProjectProperties.QUALIFIER,
+						ProjectProperties.getPrjNameKey()));
+				// if (project.getFullPath().toString().equals(ProjectProperties.getPrjNameVal())) {
+				if ((prjName != null) && prjName.equals(ProjectProperties.getPrjNameVal())) {
+					boolean res = extractProjectInfo(project);
+					if (res) {
+						System.out.println("The search is achieved.");
+						return;
+					}
+				} else {
+					System.out.println("Skip the project, path is not matched.");
 				}
 			} catch (CoreException e) {
 				e.printStackTrace();
