@@ -16,5 +16,4 @@ Nikolay:
 		http://contagiominidump.blogspot.kr/
 		https://code.google.com/p/androguard/wiki/DatabaseAndroidMalwares
 	2. Make perspective.
-		- resize SuspectList
 	3. Get api description from android frmw.
