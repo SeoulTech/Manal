@@ -1,13 +1,8 @@
 package com.dforensic.plugin.manal.perspective;
 
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
+
 
 /**
  * 
@@ -20,6 +15,9 @@ import org.eclipse.ui.PlatformUI;
  *
  */
 public class SuspectAnalysisPerspective implements IPerspectiveFactory {
+	
+	public static final String SUSPECT_ANAL_PERSP_ID = 
+			"com.dforensic.plugin.manal.perspective.SuspectAnalysis";
 
 	@Override
 	public void createInitialLayout(IPageLayout layout) {

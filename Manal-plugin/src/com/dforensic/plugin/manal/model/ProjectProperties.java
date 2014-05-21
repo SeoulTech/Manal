@@ -1,21 +1,21 @@
 package com.dforensic.plugin.manal.model;
 
-public class dataApkandProject {
+public class ProjectProperties {
 
 	private static String apkName;
-	private static String projName;
+	private static String prjName;
 	
-	public dataApkandProject()
+	public ProjectProperties()
 	{
 		
 	}
 
 	public static String getProjName() {
-		return projName;
+		return prjName;
 	}
 
-	public static void setProjName(String projName) {
-		dataApkandProject.projName = projName;
+	public static void setProjName(String prjName) {
+		ProjectProperties.prjName = prjName;
 	}
 
 	public static String getApkName() {
@@ -23,6 +23,6 @@ public class dataApkandProject {
 	}
 
 	public static void setApkName(String apkName) {
-		dataApkandProject.apkName = apkName;
+		ProjectProperties.apkName = apkName;
 	}
 }

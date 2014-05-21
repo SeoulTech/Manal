@@ -9,10 +9,15 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.WorkbenchException;
+
+import com.dforensic.plugin.manal.perspective.SuspectAnalysisPerspective;
 
 /**
  * 
@@ -53,7 +58,11 @@ public class NewManalProjectWizard extends Wizard implements INewWizard,
 	@Override
 	public boolean performFinish() {
 		boolean res = importProject();
-
+		
+		if (res) {
+			openPerspective(SuspectAnalysisPerspective.SUSPECT_ANAL_PERSP_ID);
+		}
+		
 		return res;
 	}
 
@@ -75,17 +84,17 @@ public class NewManalProjectWizard extends Wizard implements INewWizard,
 
 				return true;
 
-				//				IOverwriteQuery overwriteQuery = new IOverwriteQuery() {
-				//					public String queryOverwrite(String file) {
-				//						return ALL;
-				//					}
-				//				};
-				//
-				//				ImportOperation importOperation = new ImportOperation(
-				//						project.getFullPath(), new File(baseDir),
-				//						FileSystemStructureProvider.INSTANCE, overwriteQuery);
-				//				importOperation.setCreateContainerStructure(false);
-				//				importOperation.run(new NullProgressMonitor());
+//				IOverwriteQuery overwriteQuery = new IOverwriteQuery() {
+//					public String queryOverwrite(String file) {
+//						return ALL;
+//					}
+//				};
+//
+//				ImportOperation importOperation = new ImportOperation(
+//						project.getFullPath(), new File(baseDir),
+//						FileSystemStructureProvider.INSTANCE, overwriteQuery);
+//				importOperation.setCreateContainerStructure(false);
+//				importOperation.run(new NullProgressMonitor());
 			} catch (CoreException e) {
 				System.err.println("Not valid project to be opened.");
 				return false;
@@ -97,19 +106,16 @@ public class NewManalProjectWizard extends Wizard implements INewWizard,
 		}
 	}
 
-	/*
 	private void openPerspective(String perspectiveID) {
-		IWorkbenchWindow window = MainPlugin.getDefault().getWorkbench()
-				.getActiveWorkbenchWindow();
+		IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
 		try {
-			PlatformUI.getWorkbench().showPerspective(perspectiveID, window);
+			workbench.showPerspective(perspectiveID, window);
 		} catch (WorkbenchException e) {
-			System.out.println("ERROR! Unable to open Perspective");
+			System.err.println("Unable to open Perspective [" + perspectiveID + "].");
 			MessageDialog.openError(window.getShell(),
 					"Error Opening Perspective",
 					"Could not open Perspective with ID: " + perspectiveID);
 		}
 	}
-	*/
 
 }

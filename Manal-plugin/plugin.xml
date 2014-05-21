@@ -101,7 +101,7 @@
        <wizard
              category="com.dforensic.plugin.manal"
              class="com.dforensic.plugin.manal.wizards.NewManalProjectWizard"
-             icon="icons/sample.gif"
+             icon="icons/analysis.gif"
              id="com.dforensic.plugin.manal.wizards.NewManalProjectWizard"
              name="Suspect analysis project"
              project="true">
