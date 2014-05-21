@@ -42,6 +42,8 @@ public class WizardManalPropertiesPage extends WizardPage {
 				+ "platform for consturction of the project.");
 	}
 
+	// Refer to the article below
+	// http://www.eclipse.org/articles/article.php?file=Article-Understanding-Layouts/index.html
 	/**
 	 * @see IDialogPage#createControl(Composite)
 	 */
@@ -65,6 +67,9 @@ public class WizardManalPropertiesPage extends WizardPage {
 
 			}
 		});
+		
+		// Put an empty label to fill the 3rd column
+		label = new Label(container, SWT.NULL);
 
 		// Input apk path
 		label = new Label(container, SWT.NULL);
@@ -75,7 +80,9 @@ public class WizardManalPropertiesPage extends WizardPage {
 		apkFileText.setLayoutData(gd);
 		apkFileText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				dialogApkChanged();
+				// Even if one of fields is ok
+				// need to check another one.
+				dialogChanged();
 			}
 		});
 
@@ -89,14 +96,16 @@ public class WizardManalPropertiesPage extends WizardPage {
 
 		// Input decompiled project path
 		label = new Label(container, SWT.NULL);
-		label.setText("&Decompiled eclipse project directory:");
+		label.setText("&Project directory:");
 		
 		sourcePrjDirectoryText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		sourcePrjDirectoryText.setLayoutData(gd);
 		sourcePrjDirectoryText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				dialogSourceDirectoryChanged();
+				// Even if one of fields is ok
+				// need to check another one.
+				dialogChanged();
 			}
 		});
 
@@ -154,10 +163,11 @@ public class WizardManalPropertiesPage extends WizardPage {
 			updateStatus("Apk file name must be specified");
 			return;
 		}
-		if (apkFileName.replace('\\', '/').indexOf('/', 1) > 0) {
-			updateStatus("Apk file name must be valid");
-			return;
-		}
+		
+//		if (apkFileName.replace('\\', '/').indexOf('/', 1) > 0) {
+//			updateStatus("Apk file name must be valid");
+//			return;
+//		}
 		updateStatus(null);
 	}
 	
@@ -168,10 +178,11 @@ public class WizardManalPropertiesPage extends WizardPage {
 			updateStatus("Eclipse project directory of the decompiled apk must be specified");
 			return;
 		}
-		if (directoryName.replace('\\', '/').indexOf('/', 1) > 0) {
-			updateStatus("Eclipse project directory of the decompiled apk must be valid");
-			return;
-		}
+		
+//		if (directoryName.replace('\\', '/').indexOf('/', 1) > 0) {
+//			updateStatus("Eclipse project directory of the decompiled apk must be valid");
+//			return;
+//		}
 		updateStatus(null);
 	}
 	

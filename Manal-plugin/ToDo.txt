@@ -2,7 +2,7 @@ Nikolay:
 	
 	===========nick-new_project_wizard=======
 	http://www.ibm.com/developerworks/ru/library/os-eclipse-custwiz/
-	- layout of dialog WizardManalPropertiesPage
+	- Fix no New items for the Suspect Analysis perspective
 	
 	1. Add a path to decompiled eclipse project (test)
 	// 2. Add a path to android framework
@@ -13,5 +13,7 @@ Nikolay:
 	
 	===========General=======================
 	1. Check malware DB.
+		http://contagiominidump.blogspot.kr/
+		https://code.google.com/p/androguard/wiki/DatabaseAndroidMalwares
 	2. Make perspective.
 	3. Get api description from android frmw.
