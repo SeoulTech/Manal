@@ -28,6 +28,16 @@ import org.eclipse.jdt.ui.JavaUI;
 
 import soot.jimple.infoflow.InfoflowResults.SinkInfo;
 
+/**
+ * Draws a view to display found sinks and sources.
+ * Refer to articles about UI elements in eclipse:
+ * http://www.vogella.com/tutorials/EclipseJFace/article.html
+ * http://www.vogella.com/tutorials/SWT/article.html
+ * http://www.vogella.com/tutorials/EclipseJFaceTable/article.html
+ * 
+ * @author Zeoo
+ *
+ */
 public class SuspectListVw extends ViewPart {
 	public static final String ID = "com.dforensic.plugin.manal.views.SuspectList";
 

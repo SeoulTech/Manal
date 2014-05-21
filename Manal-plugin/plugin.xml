@@ -92,5 +92,19 @@
             name="Suspect Analysis">
       </perspective>
    </extension>
-
+   <extension
+          point="org.eclipse.ui.newWizards">
+       <category
+             id="com.dforensic.plugin.manal"
+             name="Suspect Analysis Manal Templates">
+       </category>
+       <wizard
+             category="com.dforensic.plugin.manal"
+             class="com.dforensic.plugin.manal.wizards.NewManalProjectWizard"
+             icon="icons/sample.gif"
+             id="com.dforensic.plugin.manal.wizards.NewManalProjectWizard"
+             name="Suspect analysis project"
+             project="true">
+       </wizard>
+    </extension>
 </plugin>
