@@ -1,14 +1,19 @@
 package com.dforensic.plugin.manal.wizards;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Collections;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -63,7 +68,23 @@ public class NewManalProjectWizard extends Wizard implements INewWizard,
 		ProjectProperties.setPrjNameVal(propertiesPage.getProjectName());
 		ProjectProperties.setAndroidPathVal(propertiesPage.getAndroidDirectoryName());
 		
-		boolean res = importProject();
+		String updateDir = null;
+		try {
+			URL decompilerUrl = FileLocator.resolve(FileLocator.find(Platform.getBundle(
+					"com.dforensic.plugin.manal"), new Path("tools/decompiler/APKtoJava.exe"),
+					Collections.EMPTY_MAP));
+			Process p = Runtime.getRuntime().exec(decompilerUrl.getFile() + 
+					" " + propertiesPage.getApkFileName() + " " + 
+					propertiesPage.getDecompiledSourceDirectoryName());
+			p.waitFor();
+			updateDir = propertiesPage.getDecompiledSourceDirectoryName() + 
+					"\\eclipseproject";
+		} catch (IOException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		boolean res = importProject(updateDir);
 		
 		if (res) {
 			openPerspective(SuspectAnalysisPerspective.SUSPECT_ANAL_PERSP_ID);
@@ -72,9 +93,7 @@ public class NewManalProjectWizard extends Wizard implements INewWizard,
 		return res;
 	}
 
-	private boolean importProject() {
-		String baseDir = propertiesPage.getDecompiledSourceDirectoryName();
-
+	private boolean importProject(String baseDir) {
 		if (baseDir != null) {
 			File prjDir = new File(baseDir);
 
