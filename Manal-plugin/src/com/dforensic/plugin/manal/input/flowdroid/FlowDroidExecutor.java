@@ -12,6 +12,9 @@ import com.dforensic.plugin.manal.model.ProjectProperties;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.ProgressBar;
+import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.Bundle;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -140,175 +143,6 @@ public class FlowDroidExecutor {
 		return mSinks;
 	}
 
-	/*
-	private static boolean parseAdditionalOptions(String[] args) {
-		int i = 2;
-		while (i < args.length) {
-			if (args[i].equalsIgnoreCase("--timeout")) {
-				timeout = Integer.valueOf(args[i + 1]);
-				i += 2;
-			} else if (args[i].equalsIgnoreCase("--systimeout")) {
-				sysTimeout = Integer.valueOf(args[i + 1]);
-				i += 2;
-			} else if (args[i].equalsIgnoreCase("--singleflow")) {
-				stopAfterFirstFlow = true;
-				i++;
-			} else if (args[i].equalsIgnoreCase("--implicit")) {
-				implicitFlows = true;
-				i++;
-			} else if (args[i].equalsIgnoreCase("--nostatic")) {
-				staticTracking = false;
-				i++;
-			} else if (args[i].equalsIgnoreCase("--aplength")) {
-				accessPathLength = Integer.valueOf(args[i + 1]);
-				i += 2;
-			} else if (args[i].equalsIgnoreCase("--cgalgo")) {
-				String algo = args[i + 1];
-				if (algo.equalsIgnoreCase("AUTO"))
-					callgraphAlgorithm = CallgraphAlgorithm.AutomaticSelection;
-				else if (algo.equalsIgnoreCase("VTA"))
-					callgraphAlgorithm = CallgraphAlgorithm.VTA;
-				else if (algo.equalsIgnoreCase("RTA"))
-					callgraphAlgorithm = CallgraphAlgorithm.RTA;
-				else {
-					System.err.println("Invalid callgraph algorithm");
-					return false;
-				}
-				i += 2;
-			} else if (args[i].equalsIgnoreCase("--nocallbacks")) {
-				enableCallbacks = false;
-				i++;
-			} else if (args[i].equalsIgnoreCase("--noexceptions")) {
-				enableExceptions = false;
-				i++;
-			} else if (args[i].equalsIgnoreCase("--layoutmode")) {
-				String algo = args[i + 1];
-				if (algo.equalsIgnoreCase("NONE"))
-					layoutMatchingMode = LayoutMatchingMode.NoMatch;
-				else if (algo.equalsIgnoreCase("PWD"))
-					layoutMatchingMode = LayoutMatchingMode.MatchSensitiveOnly;
-				else if (algo.equalsIgnoreCase("ALL"))
-					layoutMatchingMode = LayoutMatchingMode.MatchAll;
-				else {
-					System.err.println("Invalid layout matching mode");
-					return false;
-				}
-				i += 2;
-			} else if (args[i].equalsIgnoreCase("--aliasflowins")) {
-				flowSensitiveAliasing = false;
-				i++;
-			} else if (args[i].equalsIgnoreCase("--nopaths")) {
-				computeResultPaths = false;
-				i++;
-			} else if (args[i].equalsIgnoreCase("--aggressivetw")) {
-				aggressiveTaintWrapper = false;
-				i++;
-			} else
-				i++;
-		}
-		return true;
-	}
-
-	private static boolean validateAdditionalOptions() {
-		if (timeout > 0 && sysTimeout > 0) {
-			return false;
-		}
-		return true;
-	}
-
-	private static void runAnalysisTimeout(final String fileName,
-			final String androidJar) {
-		FutureTask<InfoflowResults> task = new FutureTask<InfoflowResults>(
-				new Callable<InfoflowResults>() {
-
-					@Override
-					public InfoflowResults call() throws Exception {
-
-						final BufferedWriter wr = new BufferedWriter(
-								new FileWriter("_out_"
-										+ new File(fileName).getName() + ".txt"));
-						try {
-							final long beforeRun = System.nanoTime();
-							wr.write("Running data flow analysis...\n");
-							final InfoflowResults res = runAnalysis(fileName,
-									androidJar);
-							wr.write("Analysis has run for "
-									+ (System.nanoTime() - beforeRun) / 1E9
-									+ " seconds\n");
-
-							wr.flush();
-							return res;
-						} finally {
-							if (wr != null)
-								wr.close();
-						}
-					}
-
-				});
-		ExecutorService executor = Executors.newFixedThreadPool(1);
-		executor.execute(task);
-
-		try {
-			System.out.println("Running infoflow task...");
-			task.get(timeout, TimeUnit.MINUTES);
-		} catch (ExecutionException e) {
-			System.err
-					.println("Infoflow computation failed: " + e.getMessage());
-			e.printStackTrace();
-		} catch (TimeoutException e) {
-			System.err.println("Infoflow computation timed out: "
-					+ e.getMessage());
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			System.err.println("Infoflow computation interrupted: "
-					+ e.getMessage());
-			e.printStackTrace();
-		}
-
-		// Make sure to remove leftovers
-		executor.shutdown();
-	}
-
-	private static void runAnalysisSysTimeout(final String fileName,
-			final String androidJar) {
-		String classpath = System.getProperty("java.class.path");
-		String javaHome = System.getProperty("java.home");
-		String executable = "/usr/bin/timeout";
-		String[] command = new String[] { executable, "-s", "KILL",
-				sysTimeout + "m", javaHome + "/bin/java", "-cp", classpath,
-				"soot.jimple.infoflow.android.TestApps.Test", fileName,
-				androidJar,
-				stopAfterFirstFlow ? "--singleflow" : "--nosingleflow",
-				implicitFlows ? "--implicit" : "--noimplicit",
-				staticTracking ? "--static" : "--nostatic", "--aplength",
-				Integer.toString(accessPathLength), "--cgalgo",
-				callgraphAlgorithmToString(callgraphAlgorithm),
-				enableCallbacks ? "--callbacks" : "--nocallbacks",
-				enableExceptions ? "--exceptions" : "--noexceptions",
-				"--layoutmode", layoutMatchingModeToString(layoutMatchingMode),
-				flowSensitiveAliasing ? "--aliasflowsens" : "--aliasflowins",
-				computeResultPaths ? "--paths" : "--nopaths",
-				aggressiveTaintWrapper ? "--aggressivetw" : "--nonaggressivetw" };
-		System.out.println("Running command: " + executable + " " + command);
-		try {
-			ProcessBuilder pb = new ProcessBuilder(command);
-			pb.redirectOutput(new File("_out_" + new File(fileName).getName()
-					+ ".txt"));
-			pb.redirectError(new File("err_" + new File(fileName).getName()
-					+ ".txt"));
-			Process proc = pb.start();
-			proc.waitFor();
-		} catch (IOException ex) {
-			System.err.println("Could not execute timeout command: "
-					+ ex.getMessage());
-			ex.printStackTrace();
-		} catch (InterruptedException ex) {
-			System.err.println("Process was interrupted: " + ex.getMessage());
-			ex.printStackTrace();
-		}
-	}
-	*/
-
 	public String callgraphAlgorithmToString(CallgraphAlgorithm algorihm) {
 		switch (algorihm) {
 		case AutomaticSelection:
@@ -388,45 +222,13 @@ public class FlowDroidExecutor {
 			System.err.println("Could not parse xml: " + ex.getMessage());
 			ex.printStackTrace();
 			throw new RuntimeException(ex);
-		}		
+		}
+		
+		
 	}
-
-	/*
-	private static void printUsage() {
-		System.out
-				.println("FlowDroid (c) Secure Software Engineering Group @ EC SPRIDE");
-		System.out.println();
-		System.out
-				.println("Incorrect arguments: [0] = apk-file, [1] = android-jar-directory");
-		System.out.println("Optional further parameters:");
-		System.out.println("\t--TIMEOUT n Time out after n seconds");
-		System.out
-				.println("\t--SYSTIMEOUT n Hard time out (kill process) after n seconds, Unix only");
-		System.out.println("\t--SINGLEFLOW Stop after finding first leak");
-		System.out.println("\t--IMPLICIT Enable implicit flows");
-		System.out.println("\t--NOSTATIC Disable static field tracking");
-		System.out.println("\t--NOEXCEPTIONS Disable exception tracking");
-		System.out.println("\t--APLENGTH n Set access path length to n");
-		System.out.println("\t--CGALGO x Use callgraph algorithm x");
-		System.out.println("\t--NOCALLBACKS Disable callback analysis");
-		System.out
-				.println("\t--LAYOUTMODE x Set UI control analysis mode to x");
-		System.out
-				.println("\t--ALIASFLOWINS Use a flow insensitive alias search");
-		System.out.println("\t--NOPATHS Do not compute result paths");
-		System.out
-				.println("\t--AGGRESSIVETW Use taint wrapper in aggressive mode");
-		System.out.println();
-		System.out.println("Supported callgraph algorithms: AUTO, RTA, VTA");
-		System.out.println("Supported layout mode algorithms: NONE, PWD, ALL");
-	}
-	*/
 
 	public void execute() {
-		// mApkPath = new String(
-		// 		"D:\\Documents\\Research\\eclipse_plugin\\Manal\\PhoneDataLeakTest\\bin\\PhoneDataLeakTest.apk");
-		// mAndroidSdkPath = new String(
-		//		"D:\\Documents\\LGE MC 5PM 1PL\\android-sdk_r10-windows\\platforms");
+		
 		mApkPath = ProjectProperties.getApkNameVal();
 		mAndroidSdkPath = ProjectProperties.getAndroidPathVal();
 		
@@ -443,29 +245,6 @@ public class FlowDroidExecutor {
 			mSinks.clear();
 			mSinks = null;
 		}
-		/*
-		if (mSources != null) {
-			mSources.clear();
-			mSources = null;
-		}
-		*/
-
-		// start with cleanup:
-		// TODO when store output
-		/*
-		BufferedReader outputDir = ResUtils.openProjectFile(OUTPUT_PATH + "JimpleOutput");
-		if (outputDir.isDirectory()) {
-			boolean success = true;
-			for (File f : outputDir.listFiles()) {
-				success = success && f.delete();
-			}
-			if (!success) {
-				System.err.println("Cleanup of output directory " + outputDir
-						+ " failed!");
-			}
-			outputDir.delete();
-		}
-		*/
 
 		File apkFile = new File(mApkPath);
 		String extension = apkFile.getName().substring(
@@ -475,16 +254,6 @@ public class FlowDroidExecutor {
 			return;
 		}
 
-		// Run the analysis
-		// TODO until do optimization
-		// run with default parameters
-		/*
-		if (timeout > 0)
-			runAnalysisTimeout(mApkPath, mAndroidSdkPath);
-		else if (sysTimeout > 0)
-			runAnalysisSysTimeout(mApkPath, mAndroidSdkPath);
-		else
-		*/
 		runAnalysis(mApkPath, mAndroidSdkPath);
 
 		System.gc();

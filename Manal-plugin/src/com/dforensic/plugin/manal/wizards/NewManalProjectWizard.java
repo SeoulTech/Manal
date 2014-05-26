@@ -63,7 +63,10 @@ public class NewManalProjectWizard extends Wizard implements INewWizard,
 		ProjectProperties.setPrjNameVal(propertiesPage.getProjectName());
 		ProjectProperties.setAndroidPathVal(propertiesPage.getAndroidDirectoryName());
 		
-		boolean res = importProject();
+		
+		// apk2java decompile progress bar.
+		
+		boolean res = importProject();  //progress bar dialog.
 		
 		if (res) {
 			openPerspective(SuspectAnalysisPerspective.SUSPECT_ANAL_PERSP_ID);
@@ -100,17 +103,6 @@ public class NewManalProjectWizard extends Wizard implements INewWizard,
 
 				return true;
 
-//				IOverwriteQuery overwriteQuery = new IOverwriteQuery() {
-//					public String queryOverwrite(String file) {
-//						return ALL;
-//					}
-//				};
-//
-//				ImportOperation importOperation = new ImportOperation(
-//						project.getFullPath(), new File(baseDir),
-//						FileSystemStructureProvider.INSTANCE, overwriteQuery);
-//				importOperation.setCreateContainerStructure(false);
-//				importOperation.run(new NullProgressMonitor());
 			} catch (CoreException e) {
 				System.err.println("Not valid project to be opened.");
 				return false;

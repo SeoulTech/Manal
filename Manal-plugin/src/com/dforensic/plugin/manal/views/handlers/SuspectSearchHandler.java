@@ -7,6 +7,12 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.ProgressBar;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
@@ -17,6 +23,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import com.dforensic.plugin.manal.ManalManager;
 import com.dforensic.plugin.manal.model.ProjectProperties;
 import com.dforensic.plugin.manal.views.SuspectListVw;
+import com.dforensic.plugin.manal.views.myProgressBar;
 
 /**
  * Our sample handler extends AbstractHandler, an IHandler base class.
@@ -27,6 +34,7 @@ public class SuspectSearchHandler extends AbstractHandler {
 	/**
 	 * The constructor.
 	 */
+	private Shell shell;
 	public SuspectSearchHandler() {
 	}
 
@@ -36,7 +44,8 @@ public class SuspectSearchHandler extends AbstractHandler {
 	 */
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-	    if (window != null)
+	    this.shell = window.getShell();
+		if (window != null)
 	    {
 	        IStructuredSelection selection = (IStructuredSelection) window.getSelectionService().getSelection();
 	        Object firstElement = selection.getFirstElement();
@@ -61,7 +70,27 @@ public class SuspectSearchHandler extends AbstractHandler {
 	    }
 		
 		ManalManager manager = new ManalManager();
-		manager.searchSuspiciousApi();
+		
+		Display  display  =  PlatformUI.getWorkbench().getDisplay();
+        Shell  shell  =  new  Shell(display);
+        shell.setLayout(new  GridLayout());
+        shell.setSize(150,60);
+        ProgressBar  pb  =  new  ProgressBar(shell,  SWT.HORIZONTAL  |  SWT.SMOOTH);
+        pb.setLayoutData(new  GridData(GridData.FILL_HORIZONTAL));
+        pb.setMinimum(0);
+        pb.setMaximum(30);
+        
+        new myProgressBar(display,pb).start();
+        shell.open();
+        while  (!shell.isDisposed())  {
+            if  (!display.readAndDispatch())  {
+                    //display.sleep();
+            	manager.searchSuspiciousApi();
+            }
+        }
+      
+		
+		
 		/*
 		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
 	    IWorkbenchPage page = window.getActivePage();
