@@ -28,8 +28,9 @@
                relative="org.eclipse.ui.editorss"
                relationship="right"
                visible="true" />
+               
          <view id="org.eclipse.jdt.ui.PackageExplorer"
-			  ratio="0.3"
+			  rgatio="0.3"
 			  relative="org.eclipse.ui.editorss"
               relationship="left"
               visible="true"/>
