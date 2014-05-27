@@ -1,7 +1,13 @@
 Nikolay:
 	
 	===========decompilation-apply==========
+	Issues:
+	1. Fix eclipseproject path
+	2. Deploy as dir
+	3. Copy FlowDroid files
+	
 	1. Run APKtoJava and FlowDroid in separate threads.
+	
 	
 	===========nick-new_project_wizard=======
 	http://www.ibm.com/developerworks/ru/library/os-eclipse-custwiz/
