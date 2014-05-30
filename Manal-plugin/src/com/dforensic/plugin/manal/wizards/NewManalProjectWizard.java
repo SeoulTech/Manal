@@ -1,18 +1,27 @@
 package com.dforensic.plugin.manal.wizards;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.Collections;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -63,10 +72,25 @@ public class NewManalProjectWizard extends Wizard implements INewWizard,
 		ProjectProperties.setPrjNameVal(propertiesPage.getProjectName());
 		ProjectProperties.setAndroidPathVal(propertiesPage.getAndroidDirectoryName());
 		
+		String updateDir = null;
 		
-		// apk2java decompile progress bar.
+		try {
+			URL decompilerUrl = FileLocator.resolve(FileLocator.find(Platform.getBundle(
+					"com.dforensic.plugin.manal"), new Path("tools/decompiler/APKtoJava.exe"),
+					Collections.EMPTY_MAP));
+			Process p = Runtime.getRuntime().exec(decompilerUrl.getFile() + 
+					" " + propertiesPage.getApkFileName() + " " + 
+					propertiesPage.getDecompiledSourceDirectoryName());
+			p.waitFor();
+			updateDir = propertiesPage.getDecompiledSourceDirectoryName() + 
+					"\\eclipseproject";
+		} catch (IOException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		boolean res = importProject();  //progress bar dialog.
+		
+		boolean res = importProject(updateDir);
 		
 		if (res) {
 			openPerspective(SuspectAnalysisPerspective.SUSPECT_ANAL_PERSP_ID);
@@ -75,9 +99,7 @@ public class NewManalProjectWizard extends Wizard implements INewWizard,
 		return res;
 	}
 
-	private boolean importProject() {
-		String baseDir = propertiesPage.getDecompiledSourceDirectoryName();
-
+	private boolean importProject(String baseDir) {
 		if (baseDir != null) {
 			File prjDir = new File(baseDir);
 
@@ -125,5 +147,55 @@ public class NewManalProjectWizard extends Wizard implements INewWizard,
 					"Could not open Perspective with ID: " + perspectiveID);
 		}
 	}
+	
+	/**
+	   * Catches output from a "java.lang.Process" and writes it to either
+	   * System.err or System.out.
+	   * 
+	   * @author Klaas Waslander - Sun Java Center
+	   */
+	  private class BackgroundPrinter extends Thread {
+	    private InputStream in;
+
+	    boolean isErrorOutput;
+
+	    public BackgroundPrinter(InputStream in, boolean isErrorOutput) {
+	      this.in = in;
+	      this.isErrorOutput = isErrorOutput;
+	    }
+
+	    public void run() {
+	      try {
+	        BufferedReader reader = new BufferedReader(new InputStreamReader(this.in));
+
+	        // read buffer
+	        char[] buf = new char[1024];
+
+	        // write data to target, until no more data is left to read
+	        int numberOfReadBytes;
+	        while ((numberOfReadBytes = reader.read(buf)) != -1) {
+	          char[] clearedbuf = new char[numberOfReadBytes];
+	          System.arraycopy(buf, 0, clearedbuf, 0, numberOfReadBytes);
+
+	          
+	        }
+	        /*
+	         * } catch (IOException ioe) { // ignore this: process has ended,
+	         * causing IOException } catch (NullPointerException ioe) { // ignore
+	         * this: there was no resulting output
+	         */
+	      } catch (Exception e) {
+	       
+	      }
+	    }
+
+	    public void close() {
+	      try {
+	        this.in.close();
+	      } catch (Exception e) {
+	        
+	      }
+	    }
+	  }
 
 }
