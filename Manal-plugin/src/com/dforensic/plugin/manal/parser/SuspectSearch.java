@@ -25,9 +25,7 @@ import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.Statement;
-import org.eclipse.jdt.internal.core.JavaElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,10 +55,13 @@ public class SuspectSearch {
 		// Loop over all projects
 		for (IProject project : projects) {
 			try {
-				String prjName = project.getPersistentProperty(new QualifiedName(ProjectProperties.QUALIFIER,
-						ProjectProperties.getPrjNameKey()));
+				String apkName = project.getPersistentProperty(new QualifiedName(ProjectProperties.QUALIFIER,
+						ProjectProperties.getApkNameKey()));
+				// String prjName = project.getPersistentProperty(new QualifiedName(ProjectProperties.QUALIFIER,
+				//		ProjectProperties.getPrjNameKey()));
 				// if (project.getFullPath().toString().equals(ProjectProperties.getPrjNameVal())) {
-				if ((prjName != null) && prjName.equals(ProjectProperties.getPrjNameVal())) {
+				// if ((prjName != null) && prjName.equals(ProjectProperties.getPrjNameVal())) {
+				if ((apkName != null) && apkName.equals(ProjectProperties.getApkNameVal())) {
 					boolean res = extractProjectInfo(project);
 					if (res) {
 						System.out.println("The search is achieved.");

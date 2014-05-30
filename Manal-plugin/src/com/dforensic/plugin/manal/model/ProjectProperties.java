@@ -7,8 +7,8 @@ public class ProjectProperties {
 	private static final String apkNameKey = "apkNameKey";
 	private static String apkNameVal;
 	
-	private static final String prjNameKey = "prjNameKey";
-	private static String prjNameVal;
+//	private static final String prjNameKey = "prjNameKey";
+//	private static String prjNameVal;
 	
 	private static final String androidPathKey = "androidPathKey";
 	private static String androidPathVal;
@@ -18,17 +18,17 @@ public class ProjectProperties {
 		
 	}
 
-	public static String getPrjNameVal() {
-		return prjNameVal;
-	}
+//	public static String getPrjNameVal() {
+//		return prjNameVal;
+//	}
 	
-	public static String getPrjNameKey() {
-		return prjNameKey;
-	}
+//	public static String getPrjNameKey() {
+//		return prjNameKey;
+//	}
 
-	public static void setPrjNameVal(String prjName) {
-		prjNameVal = prjName;
-	}
+//	public static void setPrjNameVal(String prjName) {
+//		prjNameVal = prjName;
+//	}
 
 	public static String getApkNameVal() {
 		return apkNameVal;

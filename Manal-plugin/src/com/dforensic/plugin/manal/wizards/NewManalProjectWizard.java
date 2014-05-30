@@ -21,7 +21,6 @@ import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -56,6 +55,7 @@ public class NewManalProjectWizard extends Wizard implements INewWizard,
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
+		setWindowTitle("Suspect Analysis Project");
 		this.workbench = workbench;
 	}
 
@@ -69,10 +69,11 @@ public class NewManalProjectWizard extends Wizard implements INewWizard,
 	@Override
 	public boolean performFinish() {
 		ProjectProperties.setApkNameVal(propertiesPage.getApkFileName());
-		ProjectProperties.setPrjNameVal(propertiesPage.getProjectName());
+//		ProjectProperties.setPrjNameVal(propertiesPage.getProjectName());
 		ProjectProperties.setAndroidPathVal(propertiesPage.getAndroidDirectoryName());
 		
-		String updateDir = null;
+		final String updateDir =  propertiesPage.getDecompiledSourceDirectoryName() + 
+				"\\eclipseproject";;
 		
 		try {
 			URL decompilerUrl = FileLocator.resolve(FileLocator.find(Platform.getBundle(
@@ -82,17 +83,17 @@ public class NewManalProjectWizard extends Wizard implements INewWizard,
 					" " + propertiesPage.getApkFileName() + " " + 
 					propertiesPage.getDecompiledSourceDirectoryName());
 			p.waitFor();
-			updateDir = propertiesPage.getDecompiledSourceDirectoryName() + 
-					"\\eclipseproject";
 		} catch (IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+						
 		boolean res = importProject(updateDir);
 		
-		if (res) {
+		boolean doOpenPerspective = MessageDialog.openQuestion(getShell(), "Process finished",
+				   "Open new suspect analysis perspective?");
+		
+		if (res && doOpenPerspective) {
 			openPerspective(SuspectAnalysisPerspective.SUSPECT_ANAL_PERSP_ID);
 		}
 		
@@ -116,9 +117,9 @@ public class NewManalProjectWizard extends Wizard implements INewWizard,
 				project.setPersistentProperty(new QualifiedName(ProjectProperties.QUALIFIER,
 						ProjectProperties.getApkNameKey()),
 						ProjectProperties.getApkNameVal());
-				project.setPersistentProperty(new QualifiedName(ProjectProperties.QUALIFIER,
-						ProjectProperties.getPrjNameKey()),
-						ProjectProperties.getPrjNameVal());
+//				project.setPersistentProperty(new QualifiedName(ProjectProperties.QUALIFIER,
+//						ProjectProperties.getPrjNameKey()),
+//						ProjectProperties.getPrjNameVal());
 				project.setPersistentProperty(new QualifiedName(ProjectProperties.QUALIFIER,
 						ProjectProperties.getAndroidPathKey()),
 						ProjectProperties.getAndroidPathVal());

@@ -1,25 +1,19 @@
 Nikolay:
 	
-	===========decompilation-apply==========
-	Issues:
-	1. Fix eclipseproject path
-	2. Deploy as dir
-	3. Copy FlowDroid files
-	
 	1. Run APKtoJava and FlowDroid in separate threads.
 	
-	
-	===========nick-new_project_wizard=======
+	===========new project wizard=======
 	http://www.ibm.com/developerworks/ru/library/os-eclipse-custwiz/
+	// toolbar
+	http://www.vogella.com/tutorials/EclipseCommands/article.html
+	// progress bar
+	http://www.eclipse-tips.com/how-to-guides/4-progress-bars-in-eclipse-ui
 	
 	1. Add a default path to the android framework (check if it's set up in eclipse)
 	2. Rename project
 	
 	===========General=======================
-	0. Deploy plugin as jars and folders.
 	1. Check malware DB.
 		http://contagiominidump.blogspot.kr/
 		https://code.google.com/p/androguard/wiki/DatabaseAndroidMalwares
-	2. Make perspective.
-		- resize SuspectList
-	3. Get api description from android frmw.
+	2. Get api description from android frmw.

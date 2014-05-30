@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Manal
+Bundle-Name: SuspectAnalysis
 Bundle-SymbolicName: com.dforensic.plugin.manal; singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-Vendor: DFORENSIC
+Bundle-Vendor: MANAL
 Bundle-Activator: com.dforensic.plugin.manal.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.core,
