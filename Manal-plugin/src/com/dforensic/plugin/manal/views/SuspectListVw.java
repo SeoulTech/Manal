@@ -17,6 +17,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
@@ -45,6 +48,8 @@ public class SuspectListVw extends ViewPart {
 	public interface ApiDescriptorSelection {
 		public abstract void onApiDescriptorSelected(ApiDescriptor apiDesc);
 	}
+	
+	private LeakSourcesVw leakSourcesVw;
 
 	// private TableViewer mViewer;
 	private ListViewer mSinksListVw;
@@ -77,6 +82,12 @@ public class SuspectListVw extends ViewPart {
 	 * it.
 	 */
 	public void createPartControl(Composite parent) {
+		IWorkbench wb = PlatformUI.getWorkbench();
+		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+        IWorkbenchPage page = win.getActivePage();
+		
+		leakSourcesVw = (LeakSourcesVw) page.findView(LeakSourcesVw.ID);
+		
 		/*
 		mParser = new SuspectSearch();
 
@@ -116,6 +127,10 @@ public class SuspectListVw extends ViewPart {
 								.getFirstElement();
 						if (mApiDescSelectioin != null) {
 							mApiDescSelectioin.onApiDescriptorSelected(firstElement);
+						}
+						if (firstElement != null) {
+							leakSourcesVw.setSources(firstElement.getDependencyList());
+							leakSourcesVw.showSources();
 						}
 					}
 				});

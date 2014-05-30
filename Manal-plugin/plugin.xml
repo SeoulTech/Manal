@@ -15,6 +15,13 @@
             class="com.dforensic.plugin.manal.views.SuspectListVw"
             id="com.dforensic.plugin.manal.views.SuspectList">
       </view>
+      <view
+            name="Leak Sources"
+            icon="icons/history_list.gif"
+            category="com.dforensic.plugin.manal"
+            class="com.dforensic.plugin.manal.views.LeakSourcesVw"
+            id="com.dforensic.plugin.manal.views.LeakSources">
+      </view>
    </extension>
       
    <extension
@@ -108,7 +115,13 @@
                ratio = "0.85f"
                visible="true" />
         
-   		 <view id="org.eclipse.jdt.ui.PackageExplorer"
+        <view id="com.dforensic.plugin.manal.views.LeakSources"
+               relationship="bottom"
+               relative="org.eclipse.ui.editorss"
+               ratio = "0.75f"
+               visible="true" />       
+        
+   		<view id="org.eclipse.jdt.ui.PackageExplorer"
 			  relative="org.eclipse.ui.editorss"
               relationship="left"
               ratio="0.3f"

@@ -587,7 +587,7 @@ public class ApiDescriptor {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 //		String totalValue;
-		if (mRootSink != null) {
+		if ((mRootSink != null) || (mRootSource != null)) {
 			sb.append(getMethodSignatureFromSoot());
 //			String temp = mRootSink.toString();
 //			//System.out.println("temp : " + temp);
@@ -612,9 +612,7 @@ public class ApiDescriptor {
 //			totalValue = getReturnType(temp, func)+ " " + func + getParameters(temp, func);
 //			System.out.println("totalValue : " + totalValue);
 //			sb.append(/*mRootSink.toString()*/totalValue);
-		} 
-		else 
-		{
+		} else {
 			if (mMethodType.equals(MethodType.CONSTRUCTOR)) {
 				sb.append("constructor\n");
 			}
@@ -648,8 +646,14 @@ public class ApiDescriptor {
 	}
 	
 	public String getMethodSignatureFromSoot() {
-		Value sink = mRootSink.getSink();
-		if (sink instanceof InvokeExpr) {
+		Value sink = null;
+		if (mRootSink != null) {
+			sink = mRootSink.getSink();
+		} else if (mRootSource != null) {
+			sink = mRootSource.getSource();
+		}
+		
+		if ((sink != null) && (sink instanceof InvokeExpr)) {
 			InvokeExpr expr = (InvokeExpr) sink;
 			SootMethodRef exprRef = expr.getMethodRef(); 
 			if (exprRef != null) 
@@ -667,7 +671,7 @@ public class ApiDescriptor {
 				methSign.append(retStr).append(" ");
 				methSign.append(exprRef.name().trim());
 				List<Type> params = exprRef.parameterTypes();
-				if (params != null) {
+				if ((params != null) && !params.isEmpty()) {
 					methSign.append("(");
 					for (Type param : params) {
 						String paramStr = null;
