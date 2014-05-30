@@ -3,9 +3,9 @@
 	<classpathentry exported="true" kind="lib" path="libs/axml-2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/slf4j-api-1.7.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/slf4j-simple-1.7.5.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/soot-infoflow-android.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/soot-infoflow.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/soot.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/soot-infoflow-android.jar" sourcepath="C:/Users/Sonhojun/Downloads/soot-infoflow-android-develop/soot-infoflow-android-develop/src"/>
+	<classpathentry exported="true" kind="lib" path="libs/soot-infoflow.jar" sourcepath="C:/Users/Sonhojun/Downloads/soot-infoflow-develop/soot-infoflow-develop/src"/>
+	<classpathentry exported="true" kind="lib" path="libs/soot.jar" sourcepath="C:/Users/Sonhojun/Downloads/soot-develop/soot-develop/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>

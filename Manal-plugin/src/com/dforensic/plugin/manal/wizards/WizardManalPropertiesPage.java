@@ -153,7 +153,7 @@ public class WizardManalPropertiesPage extends WizardPage {
 		dirDialog.setText("Select Android Platform Directory");
 		dirDialog.setFilterPath(workspaceDirPath);
 		String selected = dirDialog.open();
-		System.out.println(selected); // decompiled project
+		System.out.println(selected); //decompiled project
 
 		if (selected != null) {
 			androidDirectoryText.setText(selected);
