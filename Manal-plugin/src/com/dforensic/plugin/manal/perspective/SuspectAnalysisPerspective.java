@@ -28,8 +28,8 @@ public class SuspectAnalysisPerspective implements IPerspectiveFactory {
 		
 		//layout.addView("org.eclipse.jdt.ui.PackageExplorer", IPageLayout.LEFT,(float) 0.3f, layout.getEditorArea());	
 		//layout.addView("org.eclipse.ui.editors", IPageLayout.RIGHT, 0.55f, layout.getEditorArea());
-		layout.addView("left", IPageLayout.LEFT, 0.2f, layout.getEditorArea());
-		layout.addView("right", IPageLayout.RIGHT, 0.01f, layout.getEditorArea());
+		//layout.addView("left", IPageLayout.LEFT, 0.2f, layout.getEditorArea());
+		//layout.addView("right", IPageLayout.RIGHT, 0.01f, layout.getEditorArea());
 		//layout.addView("com.dforensic.plugin.manal.views.SuspectListVw", IPageLayout.RIGHT, 0.15f, layout.getEditorArea());	
 		//right.addView(IPageLayout.ID_EDITOR_AREA);
 		//right.addView("com.dforensic.plugin.manal.views.SuspectListVw");

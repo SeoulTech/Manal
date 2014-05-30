@@ -138,6 +138,7 @@ public class SuspectListVw extends ViewPart {
 	public void showSinks() {
 		if (mSinks != null) {
 			mSinksListVw.setInput(getElements());  //substring으로 잘라서 파라미터 함수 이름 split 구분.
+			
 			/*
 			for (ApiDescriptor sink : mSinks) {
 				if (sink != null) {

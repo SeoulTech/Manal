@@ -70,7 +70,7 @@ public class SuspectSearchHandler extends AbstractHandler {
 	    }
 		
 		ManalManager manager = new ManalManager();
-		
+		/*
 		Display  display  =  PlatformUI.getWorkbench().getDisplay();
         Shell  shell  =  new  Shell(display);
         shell.setLayout(new  GridLayout());
@@ -87,9 +87,9 @@ public class SuspectSearchHandler extends AbstractHandler {
                     //display.sleep();
             	manager.searchSuspiciousApi();
             }
-        }
+        }*/
       
-		
+		manager.searchSuspiciousApi();
 		
 		/*
 		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
