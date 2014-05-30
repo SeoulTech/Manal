@@ -3,6 +3,7 @@ package com.dforensic.plugin.manal.model;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -289,8 +290,10 @@ public class ApiDescriptor {
 		if (sink instanceof InvokeExpr) {
 			InvokeExpr expr = (InvokeExpr) sink;
 			SootMethodRef exprRef = expr.getMethodRef(); 
-			if (exprRef != null) {
-				return exprRef.name();
+			if (exprRef != null) 
+			{
+				//System.out.println("function name: " + exprRef.name());
+				return exprRef.name().trim();
 			}
 		}
 		System.err.println("Can't get method name. A problem to extract it from InvokeExpr.");
@@ -582,9 +585,35 @@ public class ApiDescriptor {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
+		String totalValue;
 		if (mRootSink != null) {
-			sb.append(mRootSink.toString());
-		} else {
+			
+			String temp = mRootSink.toString();
+			//System.out.println("temp : " + temp);
+			ArrayList<String> getParaList = new ArrayList<String>();
+			//System.out.println("function name : "+ getMethodNameFromSoot());
+			String func = getMethodNameFromSoot();
+			//System.out.println("return type : " + getReturnType(temp, func));
+			
+			/*for (ApiDescriptor apiD : getElements()) {
+				System.out.println("function name : "
+						+ apiD.getMethodNameFromSoot());
+				String func = apiD.getMethodNameFromSoot();
+				System.out.println("return type : " + getReturnType(apiD, func));
+				getParaList = getParameters(apiD);
+				
+				for(int i=0; i < getParaList.size(); i++)
+				{
+					System.out.println("parameter: " + getParaList.get(i));
+				}
+			}
+*/	
+			totalValue =getReturnType(temp, func)+ " " + func + getParameters(temp,func);
+			System.out.println("totalValue : " + totalValue);
+			sb.append(/*mRootSink.toString()*/totalValue);
+		} 
+		else 
+		{
 			if (mMethodType.equals(MethodType.CONSTRUCTOR)) {
 				sb.append("constructor\n");
 			}
@@ -616,5 +645,77 @@ public class ApiDescriptor {
 		
 		return sb.toString();
 	}
+	
+	private String getParameters(String apiD,String funcName) {
+		//System.out.println(apiD.split(funcName)[1]);
+		System.out.println(apiD.split(funcName)[1].split(">")[0]);
+		/*try {
+			StringTokenizer st = new StringTokenizer(apiD.toString(), "(");
+			String temp = null;
+			ArrayList<String> paraList = new ArrayList<String>();
+			while (st.hasMoreTokens()) {
+				if (st.hasMoreTokens() == false) {
+					temp = st.toString();
+					System.out.println("in parameter : " + temp);
+				}
+				st.nextToken();
+			}
+
+			StringTokenizer st_para = new StringTokenizer(temp, ",");
+			while (st_para.hasMoreTokens()) {
+				paraList.add(st_para.nextToken());
+			}
+			String lastPara = paraList.get(paraList.size() - 1);
+			paraList.remove(paraList.size() - 1);
+			StringTokenizer checkPara = new StringTokenizer(lastPara, ")");
+			String[] revisedPara = lastPara.split(")");
+
+			paraList.add(revisedPara[0]);
+
+			return paraList;
+		} catch (Exception exc) {
+			exc.printStackTrace();
+		}*/
+		return apiD.split(funcName)[1].split(">")[0];
+
+	}
+
+	private String getReturnType(String apiD, String funcName) {
+		
+		//System.out.println(apiD.split(funcName)[0]);
+		String[] temp = apiD.split(funcName)[0].split(" ");
+		//System.out.println(temp[temp.length -1]);
+		/*StringTokenizer st = new StringTokenizer(apiD, funcName.trim());
+		System.out.println("funcName trim: " + funcName.trim());
+		String tempToken;
+		ArrayList<String> TokenList = new ArrayList<String>();
+		int idx = 0;
+
+		try 
+		{
+			while (st.hasMoreTokens()) {
+				tempToken = st.nextToken();
+				TokenList.add(tempToken);
+				System.out.println(tempToken);
+
+				if (tempToken.equals(funcName)) // if find function name
+				{
+					System.out
+							.println("return type: " + TokenList.get(idx - 1));
+					return TokenList.get(idx - 1);
+					// StringTokenizer st_func = new StringTokenizer(tempToken,
+				}
+				idx++;
+			}
+			
+		} catch (Exception exc) {
+
+			exc.printStackTrace();
+		}
+		*/
+		return temp[temp.length -1];
+	}
+
+	
 
 }

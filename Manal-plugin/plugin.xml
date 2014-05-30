@@ -13,28 +13,11 @@
             icon="icons/sample.gif"
             category="com.dforensic.plugin.manal"
             class="com.dforensic.plugin.manal.views.SuspectListVw"
+            ratio="0.1f"
             id="com.dforensic.plugin.manal.views.SuspectList">
       </view>
    </extension>
-   <extension
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension
-            targetID="com.dforensic.plugin.manal.perspective.SuspectAnalysis">
-         <actionSet id="org.eclipse.jdt.ui.JavaActionSet"/>
-         <viewShortcut id="org.eclipse.jdt.ui.PackageExplorer"/> 
-         <perspectiveShortcut id="org.eclipse.jdt.ui.JavaPerspective"/>  
-		 <view id="com.dforensic.plugin.manal.views.SuspectList"
-               ratio="0.15"
-               relative="org.eclipse.ui.editorss"
-               relationship="right"
-               visible="true" />
-         <view id="org.eclipse.jdt.ui.PackageExplorer"
-			  ratio="0.2"
-			  relative="org.eclipse.ui.editorss"
-              relationship="left"
-              visible="true"/>
-      </perspectiveExtension>
-   </extension>
+   
    <extension
          point="org.eclipse.core.runtime.adapters">
       <factory
@@ -83,15 +66,7 @@
         </command>
       </menuContribution>
    </extension>
-   <extension
-         point="org.eclipse.ui.perspectives">
-      <perspective
-            class="com.dforensic.plugin.manal.perspective.SuspectAnalysisPerspective"
-            icon="icons/analysis.gif"
-            id="com.dforensic.plugin.manal.perspective.SuspectAnalysis"
-            name="Suspect Analysis">
-      </perspective>
-   </extension>
+  
    <extension
           point="org.eclipse.ui.newWizards">
        <category
@@ -107,4 +82,37 @@
              project="true">
        </wizard>
     </extension>
+    <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="com.dforensic.plugin.manal.perspective.SuspectAnalysisPerspective"
+            icon="icons/analysis.gif"
+            id="suspectiveManal"
+            name="Suspect Analysis">
+      </perspective>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="suspectiveManal">
+        <!--  <actionSet id="org.eclipse.jdt.ui.JavaActionSet"/>
+         <viewShortcut id="org.eclipse.jdt.ui.PackageExplorer"/> 
+         <perspectiveShortcut id="org.eclipse.jdt.ui.JavaPerspective"/>  -->
+         
+		<view id="com.dforensic.plugin.manal.views.SuspectList"
+               relationship="right"
+               relative="right"
+               ratio = "0.85f"
+               visible="true" />
+        
+   		 <view id="org.eclipse.jdt.ui.PackageExplorer"
+			  relative="org.eclipse.ui.editorss"
+              relationship="left"
+              ratio="0.3f"
+              visible="true"/> 
+      
+      </perspectiveExtension>
+   </extension>
+   
 </plugin>
