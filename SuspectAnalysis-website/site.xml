@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/com.dforensic.plugin.manal.feature_1.0.0.201405301241.jar" id="com.dforensic.plugin.manal.feature" version="1.0.0.201405301241">
+   <feature url="features/com.dforensic.plugin.manal.feature_1.0.0.201405310300.jar" id="com.dforensic.plugin.manal.feature" version="1.0.0.201405310300">
       <category name="com.dforensic.plugin.manal.category"/>
    </feature>
    <category-def name="com.dforensic.plugin.manal.category" label="Suspect Analysis">
