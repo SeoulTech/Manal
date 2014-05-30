@@ -1,33 +1,39 @@
+/*
+ *  <Manal project is an eclipse plugin for the automation of malware analysis.>
+ *  Copyright (C) <2014>  <Nikolay Akatyev, Hojun Son>
+ *  This file is part of Manal project.
+ *
+ *  Manal project is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, version 3 of the License.
+ *
+ *  Manal project is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Manal project. If not, see <http://www.gnu.org/licenses/>.
+ *  
+ *  Contact information of contributors:
+ *  - Nikolay Akatyev: nikolay.akatyev@gmail.com
+ *  - Hojun Son: smuoon4680@gmail.com
+ */
 package com.dforensic.plugin.manal.views;
 
 import java.util.List;
 
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ListViewer;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import com.dforensic.plugin.manal.model.ApiDescriptor;
-import com.dforensic.plugin.manal.parser.SuspectSearch;
-import com.dforensic.plugin.manal.parser.XmlManager;
-
-import org.eclipse.jdt.ui.JavaUI;
-
-import soot.jimple.infoflow.InfoflowResults.SinkInfo;
 
 /**
  * Draws a view to display sources related
