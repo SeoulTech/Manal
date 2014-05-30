@@ -11,7 +11,6 @@ Nikolay:
 	
 	===========nick-new_project_wizard=======
 	http://www.ibm.com/developerworks/ru/library/os-eclipse-custwiz/
-	- Fix no New items for the Suspect Analysis perspective
 	
 	1. Add a default path to the android framework (check if it's set up in eclipse)
 	2. Rename project
