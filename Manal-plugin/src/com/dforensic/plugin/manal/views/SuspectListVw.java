@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PartInitException;
@@ -98,7 +99,9 @@ public class SuspectListVw extends ViewPart {
 		viewer.setInput(getElements());
 		*/
 		mSinksListVw = new ListViewer(parent);
+		
 		mSinksListVw.setContentProvider(new ArrayContentProvider());
+		
 		// viewer.setLabelProvider(new ViewLabelProvider());
 		// getSite().setSelectionProvider(mSinksListVw);
 
@@ -116,6 +119,8 @@ public class SuspectListVw extends ViewPart {
 						}
 					}
 				});
+		
+		
 	}
 
 	/**
@@ -132,7 +137,7 @@ public class SuspectListVw extends ViewPart {
 
 	public void showSinks() {
 		if (mSinks != null) {
-			mSinksListVw.setInput(getElements());
+			mSinksListVw.setInput(getElements());  //substring으로 잘라서 파라미터 함수 이름 split 구분.
 			/*
 			for (ApiDescriptor sink : mSinks) {
 				if (sink != null) {

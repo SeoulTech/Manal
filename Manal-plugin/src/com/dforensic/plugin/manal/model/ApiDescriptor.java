@@ -290,6 +290,7 @@ public class ApiDescriptor {
 			InvokeExpr expr = (InvokeExpr) sink;
 			SootMethodRef exprRef = expr.getMethodRef(); 
 			if (exprRef != null) {
+				System.out.println("function name: " + exprRef.name());
 				return exprRef.name();
 			}
 		}
@@ -583,7 +584,7 @@ public class ApiDescriptor {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		if (mRootSink != null) {
-			sb.append(mRootSink.toString());
+			sb.append(/*mRootSink.toString()*/getMethodNameFromSoot());
 		} else {
 			if (mMethodType.equals(MethodType.CONSTRUCTOR)) {
 				sb.append("constructor\n");

@@ -6,10 +6,11 @@ import org.eclipse.swt.widgets.ProgressBar;
 public class  myProgressBar  extends  Thread  {
         private  Display  display;
         private  ProgressBar  progressBar;
-
+        private int percentage;
         public  myProgressBar(Display  display,  ProgressBar  progressBar)  {
                 this.display  =  display;
                 this.progressBar  =  progressBar;
+                this.percentage = 0;
         }
 
         public  void  run()  {
