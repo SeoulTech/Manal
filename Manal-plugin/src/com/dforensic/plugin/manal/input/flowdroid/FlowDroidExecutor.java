@@ -2,21 +2,25 @@ package com.dforensic.plugin.manal.input.flowdroid;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.dforensic.plugin.manal.model.ApiDescriptor;
 import com.dforensic.plugin.manal.model.ProjectProperties;
 
+import org.eclipse.core.internal.utils.FileUtil;
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.osgi.framework.Bundle;
 import org.xmlpull.v1.XmlPullParserException;
 
-import soot.SootMethod;
-import soot.Unit;
 import soot.jimple.infoflow.InfoflowResults;
 import soot.jimple.infoflow.IInfoflow.CallgraphAlgorithm;
 import soot.jimple.infoflow.InfoflowResults.SinkInfo;
@@ -26,14 +30,13 @@ import soot.jimple.infoflow.android.AndroidSourceSinkManager.LayoutMatchingMode;
 import soot.jimple.infoflow.handlers.ResultsAvailableHandler;
 import soot.jimple.infoflow.solver.IInfoflowCFG;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
-import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 
 public class FlowDroidExecutor {
 
 	public interface FlowDroidCallback {
 		public void onExecutionDone();
 	}
-	
+
 	/**
 	 * path to apk-file
 	 */
@@ -53,7 +56,7 @@ public class FlowDroidExecutor {
 
 		private FlowDroidResultsAvailableHandler(BufferedWriter wr) {
 			this.wr = wr;
-		}	
+		}
 
 		private void print(String string) {
 			try {
@@ -67,6 +70,7 @@ public class FlowDroidExecutor {
 
 		@Override
 		public void onResultsAvailable(IInfoflowCFG cfg, InfoflowResults results) {
+			cleanAfterExec();
 			if (mSinks == null) {
 				mSinks = new ArrayList<ApiDescriptor>();
 			}
@@ -82,7 +86,8 @@ public class FlowDroidExecutor {
 							+ ", from the following sources:");
 					for (SourceInfo source : results.getResults().get(sink)) {
 						ApiDescriptor sourceDesc = new ApiDescriptor(source);
-						sourceDesc.setSootMethod(cfg.getMethodOf(source.getContext()));
+						sourceDesc.setSootMethod(cfg.getMethodOf(source
+								.getContext()));
 						// sourceDesc.addDependency(sinkDesc);
 						sinkDesc.addDependency(sourceDesc);
 						// mSources.add(sourceDesc);
@@ -97,14 +102,14 @@ public class FlowDroidExecutor {
 					}
 				}
 			}
-		}			
+		}
 	}
-	
+
 	private List<ApiDescriptor> mSinks = null;
 	// not use: there would be many repeating sources.	
 	// make a UUID: signature + class + line
 	// private List<ApiDescriptor> mSources = null;
-	
+
 	private FlowDroidCallback mFlowDroidCallback = null;
 
 	private String command;
@@ -127,15 +132,15 @@ public class FlowDroidExecutor {
 	private CallgraphAlgorithm callgraphAlgorithm = CallgraphAlgorithm.AutomaticSelection;
 
 	private static boolean DEBUG = false;
-	
+
 	public void registerFlowDroidCallback(FlowDroidCallback cb) {
 		mFlowDroidCallback = cb;
 	}
-	
+
 	public void unregisterFlowDroidCallback(FlowDroidCallback cb) {
 		mFlowDroidCallback = null;
 	}
-	
+
 	public List<ApiDescriptor> getDiscoveredSinks() {
 		return mSinks;
 	}
@@ -352,7 +357,7 @@ public class FlowDroidExecutor {
 			app.setLayoutMatchingMode(layoutMatchingMode);
 			app.setFlowSensitiveAliasing(flowSensitiveAliasing);
 			app.setComputeResultPaths(computeResultPaths);
-		
+
 			final EasyTaintWrapper taintWrapper;
 			if (new File("../soot-infoflow/EasyTaintWrapperSource.txt")
 					.exists())
@@ -388,7 +393,7 @@ public class FlowDroidExecutor {
 			System.err.println("Could not parse xml: " + ex.getMessage());
 			ex.printStackTrace();
 			throw new RuntimeException(ex);
-		}		
+		}
 	}
 
 	/*
@@ -429,7 +434,7 @@ public class FlowDroidExecutor {
 		//		"D:\\Documents\\LGE MC 5PM 1PL\\android-sdk_r10-windows\\platforms");
 		mApkPath = ProjectProperties.getApkNameVal();
 		mAndroidSdkPath = ProjectProperties.getAndroidPathVal();
-		
+
 		if (mApkPath == null) {
 			mApkPath = new String(
 					"D:\\Workspaces\\SsSDK\\contest_dev\\Manal\\PhoneDataLeakTest\\bin\\PhoneDataLeakTest.apk");
@@ -438,7 +443,7 @@ public class FlowDroidExecutor {
 			mAndroidSdkPath = new String(
 					"D:\\Workspaces\\android-sdk\\platforms");
 		}
-		
+
 		if (mSinks != null) {
 			mSinks.clear();
 			mSinks = null;
@@ -485,6 +490,9 @@ public class FlowDroidExecutor {
 			runAnalysisSysTimeout(mApkPath, mAndroidSdkPath);
 		else
 		*/
+		
+		prepareExec();
+		
 		runAnalysis(mApkPath, mAndroidSdkPath);
 
 		System.gc();
@@ -496,6 +504,84 @@ public class FlowDroidExecutor {
 
 	public void setAndroidSdkPath(String path) {
 		mAndroidSdkPath = path;
+	}
+
+	/**
+	 * Copy FlowDroid files to the root directory of Eclipse in order to be open
+	 * by a relative name.
+	 */
+	private void prepareExec() {
+		// Copy files from the plugin directory
+		// to the root directory.
+		try {
+			File rootDir = new File(".").getAbsoluteFile();
+			File flowDroidFilesDir = new File(FileLocator.resolve(FileLocator.find(
+					Platform.getBundle("com.dforensic.plugin.manal"),
+					new Path("files/flowdroid/"), Collections.EMPTY_MAP)).getPath());
+			copyDirectory(flowDroidFilesDir, rootDir);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * Remove FlowDroid related files from the root directory of Eclipse.
+	 */
+	private void cleanAfterExec() {
+		try {
+			File rootDir = new File(".").getAbsoluteFile();
+			String[] flowDroidFileNames = getFlowDroidFileNames();
+			String[] children = rootDir.list();
+			for (int j = 0; j < flowDroidFileNames.length; j++) {
+				for (int i = 0; i < children.length; i++) {
+					if (flowDroidFileNames[j].equals(children[i])) {
+						Files.delete(new File(rootDir.getAbsolutePath() + "\\" +
+								flowDroidFileNames[j]).toPath());
+					}
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private String[] getFlowDroidFileNames() {
+		String[] fileNames = { "AndroidCallbacks.txt",
+				"EasyTaintWrapperConversion.txt", "EasyTaintWrapperSource.txt",
+				"SourcesAndSinks.txt", };
+		return fileNames;
+	}
+
+	private void copyDirectory(File sourceLocation, File targetLocation)
+			throws IOException {
+
+		if (sourceLocation.isDirectory()) {
+//			if (!targetLocation.exists()) {
+//				targetLocation.mkdir();
+//			}
+
+			String[] children = sourceLocation.list();
+			for (int i = 0; i < children.length; i++) {
+				copyDirectory(new File(sourceLocation, children[i]), new File(
+						targetLocation, children[i]));
+			}
+		} else {
+
+			InputStream in = new FileInputStream(sourceLocation);
+			OutputStream out = new FileOutputStream(targetLocation);
+
+			// Copy the bits from instream to outstream
+			byte[] buf = new byte[1024];
+			int len;
+			while ((len = in.read(buf)) > 0) {
+				out.write(buf, 0, len);
+			}
+			in.close();
+			out.close();
+		}
 	}
 
 }
