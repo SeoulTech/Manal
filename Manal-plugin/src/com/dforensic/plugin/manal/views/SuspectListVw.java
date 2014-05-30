@@ -158,7 +158,7 @@ public class SuspectListVw extends ViewPart {
 			System.err.println("Nothing to show, sinks are not initialized.");
 		}
 	}
-
+	
 	private ApiDescriptor[] getElements() {
 		if (mSinks != null) {
 			return mSinks.toArray(new ApiDescriptor[mSinks.size()]);
