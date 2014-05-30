@@ -74,31 +74,20 @@ public class NewManalProjectWizard extends Wizard implements INewWizard,
 		
 		String updateDir = null;
 		
-		Display.getDefault().asyncExec(new Runnable() {
-
-				
-				@Override
-				public void run() {
-					try {
-					URL decompilerUrl = FileLocator.resolve(FileLocator.find(Platform.getBundle(
-							"com.dforensic.plugin.manal"), new Path("tools/decompiler/APKtoJava.exe"),
-							Collections.EMPTY_MAP));
-					Process p = Runtime.getRuntime().exec(decompilerUrl.getFile() + 
-							" " + propertiesPage.getApkFileName() + " " + 
-							propertiesPage.getDecompiledSourceDirectoryName());
-					BackgroundPrinter stdout = new BackgroundPrinter(p.getInputStream(), false);
-					BackgroundPrinter  stderr = new BackgroundPrinter(p.getErrorStream(), true);
-					  stdout.start();
-				      stderr.start();
-					
-					p.waitFor();	
-					
-					} catch (IOException | InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			});
+		try {
+			URL decompilerUrl = FileLocator.resolve(FileLocator.find(Platform.getBundle(
+					"com.dforensic.plugin.manal"), new Path("tools/decompiler/APKtoJava.exe"),
+					Collections.EMPTY_MAP));
+			Process p = Runtime.getRuntime().exec(decompilerUrl.getFile() + 
+					" " + propertiesPage.getApkFileName() + " " + 
+					propertiesPage.getDecompiledSourceDirectoryName());
+			p.waitFor();
+			updateDir = propertiesPage.getDecompiledSourceDirectoryName() + 
+					"\\eclipseproject";
+		} catch (IOException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 		boolean res = importProject(updateDir);
