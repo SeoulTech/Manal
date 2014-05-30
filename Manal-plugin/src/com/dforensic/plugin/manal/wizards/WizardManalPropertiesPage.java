@@ -1,3 +1,24 @@
+/*
+ *  <Manal project is an eclipse plugin for the automation of malware analysis.>
+ *  Copyright (C) <2014>  <Nikolay Akatyev, Hojun Son>
+ *  This file is part of Manal project.
+ *
+ *  Manal project is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, version 3 of the License.
+ *
+ *  Manal project is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Manal project. If not, see <http://www.gnu.org/licenses/>.
+ *  
+ *  Contact information of contributors:
+ *  - Nikolay Akatyev: nikolay.akatyev@gmail.com
+ *  - Hojun Son: smuoon4680@gmail.com
+ */
 package com.dforensic.plugin.manal.wizards;
 
 import java.io.File;
@@ -26,7 +47,7 @@ import org.eclipse.swt.widgets.Text;
  */
 
 public class WizardManalPropertiesPage extends WizardPage {
-	private Text projectNameText;
+//	private Text projectNameText;
 	private Text apkFileText;
 	private Text sourcePrjDirectoryText;
 	private Text androidDirectoryText;
@@ -39,7 +60,7 @@ public class WizardManalPropertiesPage extends WizardPage {
 	public WizardManalPropertiesPage() {
 		super("wizardPage");
 		setTitle("Set properties of suspect analysis project");
-		setDescription("Set project name, path to apk and path to anroid "
+		setDescription("Set path to apk, output folder and path to anroid "
 				+ "platform for consturction of the project.");
 	}
 
@@ -56,25 +77,27 @@ public class WizardManalPropertiesPage extends WizardPage {
 		layout.numColumns = 3;
 		layout.verticalSpacing = 9;
 
-		// Input project name
-		Label label = new Label(container, SWT.NULL);
-		label.setText("&Project name:");
-
-		projectNameText = new Text(container, SWT.BORDER | SWT.SINGLE);
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		projectNameText.setLayoutData(gd);
-		projectNameText.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-
-			}
-		});
-		
-		// Put an empty label to fill the 3rd column
-		label = new Label(container, SWT.NULL);
+		Label label = null;
+		GridData gd = null;
+//		// Input project name
+//		label = new Label(container, SWT.NULL);
+//		label.setText("&Project name:");
+//
+//		projectNameText = new Text(container, SWT.BORDER | SWT.SINGLE);
+//		gd = new GridData(GridData.FILL_HORIZONTAL);
+//		projectNameText.setLayoutData(gd);
+//		projectNameText.addModifyListener(new ModifyListener() {
+//			public void modifyText(ModifyEvent e) {
+//
+//			}
+//		});
+//		
+//		// Put an empty label to fill the 3rd column
+//		label = new Label(container, SWT.NULL);
 
 		// Input apk path
 		label = new Label(container, SWT.NULL);
-		label.setText("&Apk file name:");
+		label.setText("&Apk file:");
 
 		apkFileText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		gd = new GridData(GridData.FILL_HORIZONTAL);
@@ -97,7 +120,7 @@ public class WizardManalPropertiesPage extends WizardPage {
 
 		// Input decompiled project path
 		label = new Label(container, SWT.NULL);
-		label.setText("&Project directory:");
+		label.setText("&Output:");
 		
 		sourcePrjDirectoryText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		gd = new GridData(GridData.FILL_HORIZONTAL);
@@ -120,7 +143,7 @@ public class WizardManalPropertiesPage extends WizardPage {
 		
 		// Input android platform path
 		label = new Label(container, SWT.NULL);
-		label.setText("An&droid path:");
+		label.setText("An&droid platforms:");
 				
 		androidDirectoryText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		gd = new GridData(GridData.FILL_HORIZONTAL);
@@ -129,10 +152,10 @@ public class WizardManalPropertiesPage extends WizardPage {
 		Button browseAndroidDirectoryBtn = new Button(container, SWT.PUSH);
 		browseAndroidDirectoryBtn.setText("Browse...");
 		browseAndroidDirectoryBtn.addSelectionListener(new SelectionAdapter() {
-					public void widgetSelected(SelectionEvent e) {
-						handleBrowseAndroidPlatform();
-					}
-				});
+			public void widgetSelected(SelectionEvent e) {
+				handleBrowseAndroidPlatform();
+			}
+		});
 
 		dialogChanged();
 		setControl(container);
@@ -170,7 +193,7 @@ public class WizardManalPropertiesPage extends WizardPage {
 			workspaceDirPath = workspaceDirectory.getPath();
 		}
 		DirectoryDialog dirDialog = new DirectoryDialog(getShell());
-		dirDialog.setText("Select Eclipse Project Directory");
+		dirDialog.setText("Select Output Directory");
 		dirDialog.setFilterPath(workspaceDirPath);
 		String selected = dirDialog.open();
 		System.out.println(selected); // decompiled project
@@ -212,7 +235,7 @@ public class WizardManalPropertiesPage extends WizardPage {
 		String directoryName = getDecompiledSourceDirectoryName();
 
 		if (directoryName.length() == 0) {
-			updateStatus("Eclipse project directory of the decompiled apk must be specified");
+			updateStatus("Output directory for the decompiled apk must be specified");
 			return;
 		}
 		
@@ -233,9 +256,9 @@ public class WizardManalPropertiesPage extends WizardPage {
 		setPageComplete(message == null);
 	}
 
-	public String getProjectName() {
-		return projectNameText.getText();
-	}
+//	public String getProjectName() {
+//		return projectNameText.getText();
+//	}
 
 	public String getApkFileName() {
 		return apkFileText.getText();

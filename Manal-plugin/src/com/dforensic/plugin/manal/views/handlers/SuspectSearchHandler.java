@@ -1,3 +1,24 @@
+/*
+ *  <Manal project is an eclipse plugin for the automation of malware analysis.>
+ *  Copyright (C) <2014>  <Nikolay Akatyev, Hojun Son>
+ *  This file is part of Manal project.
+ *
+ *  Manal project is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, version 3 of the License.
+ *
+ *  Manal project is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Manal project. If not, see <http://www.gnu.org/licenses/>.
+ *  
+ *  Contact information of contributors:
+ *  - Nikolay Akatyev: nikolay.akatyev@gmail.com
+ *  - Hojun Son: smuoon4680@gmail.com
+ */
 package com.dforensic.plugin.manal.views.handlers;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -7,23 +28,14 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.QualifiedName;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 
 import com.dforensic.plugin.manal.ManalManager;
 import com.dforensic.plugin.manal.model.ProjectProperties;
-import com.dforensic.plugin.manal.views.SuspectListVw;
-import com.dforensic.plugin.manal.views.myProgressBar;
 
 /**
  * Our sample handler extends AbstractHandler, an IHandler base class.
@@ -47,26 +59,31 @@ public class SuspectSearchHandler extends AbstractHandler {
 	    this.shell = window.getShell();
 		if (window != null)
 	    {
-	        IStructuredSelection selection = (IStructuredSelection) window.getSelectionService().getSelection();
-	        Object firstElement = selection.getFirstElement();
-	        if (firstElement instanceof IAdaptable)
-	        {
-	            IProject project = (IProject)((IAdaptable)firstElement).getAdapter(IProject.class);
-	            try {
-					ProjectProperties.setApkNameVal(
-							project.getPersistentProperty(new QualifiedName(ProjectProperties.QUALIFIER,
-									ProjectProperties.getApkNameKey())));
-					ProjectProperties.setPrjNameVal(
-							project.getPersistentProperty(new QualifiedName(ProjectProperties.QUALIFIER,
-									ProjectProperties.getPrjNameKey())));
-					ProjectProperties.setAndroidPathVal(
-							project.getPersistentProperty(new QualifiedName(ProjectProperties.QUALIFIER,
-									ProjectProperties.getAndroidPathKey())));
-				} catch (CoreException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-	        }
+			try {
+		        IStructuredSelection selection = (IStructuredSelection) window.getSelectionService().getSelection();
+		        Object firstElement = selection.getFirstElement();
+		        if (firstElement instanceof IAdaptable)
+		        {
+		            IProject project = (IProject)((IAdaptable)firstElement).getAdapter(IProject.class);
+		            try {
+						ProjectProperties.setApkNameVal(
+								project.getPersistentProperty(new QualifiedName(ProjectProperties.QUALIFIER,
+										ProjectProperties.getApkNameKey())));
+//						ProjectProperties.setPrjNameVal(
+//								project.getPersistentProperty(new QualifiedName(ProjectProperties.QUALIFIER,
+//										ProjectProperties.getPrjNameKey())));
+						ProjectProperties.setAndroidPathVal(
+								project.getPersistentProperty(new QualifiedName(ProjectProperties.QUALIFIER,
+										ProjectProperties.getAndroidPathKey())));
+					} catch (CoreException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		        }
+			} catch (Exception e) {
+				MessageDialog.openInformation(window.getShell(), "No selected project", 
+						"Please, select a project to analyse.");
+			}
 	    }
 		
 		ManalManager manager = new ManalManager();

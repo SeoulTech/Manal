@@ -1,9 +1,28 @@
+/*
+ *  <Manal project is an eclipse plugin for the automation of malware analysis.>
+ *  Copyright (C) <2014>  <Nikolay Akatyev, Hojun Son>
+ *  This file is part of Manal project.
+ *
+ *  Manal project is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, version 3 of the License.
+ *
+ *  Manal project is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Manal project. If not, see <http://www.gnu.org/licenses/>.
+ *  
+ *  Contact information of contributors:
+ *  - Nikolay Akatyev: nikolay.akatyev@gmail.com
+ *  - Hojun Son: smuoon4680@gmail.com
+ */
 package com.dforensic.plugin.manal.model;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -15,6 +34,7 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.SootMethodRef;
+import soot.Type;
 import soot.Value;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
@@ -293,6 +313,8 @@ public class ApiDescriptor {
 			if (exprRef != null) 
 			{
 				//System.out.println("function name: " + exprRef.name());
+				exprRef.parameterTypes();
+				exprRef.returnType();
 				return exprRef.name().trim();
 			}
 		}
@@ -585,35 +607,33 @@ public class ApiDescriptor {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		String totalValue;
-		if (mRootSink != null) {
+//		String totalValue;
+		if ((mRootSink != null) || (mRootSource != null)) {
+			sb.append(getMethodSignatureFromSoot());
+//			String temp = mRootSink.toString();
+//			//System.out.println("temp : " + temp);
+//			ArrayList<String> getParaList = new ArrayList<String>();
+//			//System.out.println("function name : "+ getMethodNameFromSoot());
+//			String func = getMethodNameFromSoot();
+//			//System.out.println("return type : " + getReturnType(temp, func));
 			
-			String temp = mRootSink.toString();
-			//System.out.println("temp : " + temp);
-			ArrayList<String> getParaList = new ArrayList<String>();
-			//System.out.println("function name : "+ getMethodNameFromSoot());
-			String func = getMethodNameFromSoot();
-			//System.out.println("return type : " + getReturnType(temp, func));
-			
-			/*for (ApiDescriptor apiD : getElements()) {
-				System.out.println("function name : "
-						+ apiD.getMethodNameFromSoot());
-				String func = apiD.getMethodNameFromSoot();
-				System.out.println("return type : " + getReturnType(apiD, func));
-				getParaList = getParameters(apiD);
-				
-				for(int i=0; i < getParaList.size(); i++)
-				{
-					System.out.println("parameter: " + getParaList.get(i));
-				}
-			}
-*/	
-			totalValue =getReturnType(temp, func)+ " " + func + getParameters(temp,func);
-			System.out.println("totalValue : " + totalValue);
-			sb.append(/*mRootSink.toString()*/totalValue);
-		} 
-		else 
-		{
+//			for (ApiDescriptor apiD : getElements()) {
+//				System.out.println("function name : "
+//						+ apiD.getMethodNameFromSoot());
+//				String func = apiD.getMethodNameFromSoot();
+//				System.out.println("return type : " + getReturnType(apiD, func));
+//				getParaList = getParameters(apiD);
+//				
+//				for(int i=0; i < getParaList.size(); i++)
+//				{
+//					System.out.println("parameter: " + getParaList.get(i));
+//				}
+//			}
+
+//			totalValue = getReturnType(temp, func)+ " " + func + getParameters(temp, func);
+//			System.out.println("totalValue : " + totalValue);
+//			sb.append(/*mRootSink.toString()*/totalValue);
+		} else {
 			if (mMethodType.equals(MethodType.CONSTRUCTOR)) {
 				sb.append("constructor\n");
 			}
@@ -646,7 +666,57 @@ public class ApiDescriptor {
 		return sb.toString();
 	}
 	
-	private String getParameters(String apiD,String funcName) {
+	public String getMethodSignatureFromSoot() {
+		Value sink = null;
+		if (mRootSink != null) {
+			sink = mRootSink.getSink();
+		} else if (mRootSource != null) {
+			sink = mRootSource.getSource();
+		}
+		
+		if ((sink != null) && (sink instanceof InvokeExpr)) {
+			InvokeExpr expr = (InvokeExpr) sink;
+			SootMethodRef exprRef = expr.getMethodRef(); 
+			if (exprRef != null) 
+			{
+				//System.out.println("function name: " + exprRef.name());
+				StringBuilder methSign = new StringBuilder();
+				Type ret = exprRef.returnType();
+				String retStr = null;
+				if (ret != null) {
+					retStr = ret.toString().trim();
+				}
+				if ((retStr == null) || (retStr.isEmpty())) {
+					retStr = new String("void");
+				}
+				methSign.append(retStr).append(" ");
+				methSign.append(exprRef.name().trim());
+				List<Type> params = exprRef.parameterTypes();
+				if ((params != null) && !params.isEmpty()) {
+					methSign.append("(");
+					for (Type param : params) {
+						String paramStr = null;
+						if (param != null) {
+							paramStr = param.toString().trim();
+						}
+						if ((paramStr == null) || (paramStr.isEmpty())) {
+							paramStr = new String("void");
+						}
+						methSign.append(paramStr).append(", ");
+					}					
+					methSign.replace(methSign.length() - 2, methSign.length(), "");
+					methSign.append(")");
+				} else {
+					methSign.append("()");
+				}
+				return methSign.toString();
+			}
+		}
+		System.err.println("Can't get method name. A problem to extract it from InvokeExpr.");
+		return null;
+	}
+	
+	private String getParameters(String apiD, String funcName) {
 		//System.out.println(apiD.split(funcName)[1]);
 		System.out.println(apiD.split(funcName)[1].split(">")[0]);
 		/*try {

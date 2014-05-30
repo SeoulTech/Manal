@@ -9,29 +9,25 @@
             id="com.dforensic.plugin.manal">
       </category>
       <view
-            name="Suspect List View"
-            icon="icons/sample.gif"
+            name="Suspect List"
+            icon="icons/history_list.gif"
             category="com.dforensic.plugin.manal"
             class="com.dforensic.plugin.manal.views.SuspectListVw"
-            ratio="0.1f"
             id="com.dforensic.plugin.manal.views.SuspectList">
       </view>
+      <view
+            name="Leak Sources"
+            icon="icons/history_list.gif"
+            category="com.dforensic.plugin.manal"
+            class="com.dforensic.plugin.manal.views.LeakSourcesVw"
+            id="com.dforensic.plugin.manal.views.LeakSources">
+      </view>
    </extension>
-   
-   <extension
-         point="org.eclipse.core.runtime.adapters">
-      <factory
-            adaptableType="com.dforensic.plugin.manal.model.ApiDescription"
-            class="com.dforensic.plugin.manal.ApiDescriptionAdapterFactory">
-         <adapter
-               type="org.eclipse.ui.views.properties.IPropertySource">
-         </adapter>
-      </factory>
-   </extension>
+      
    <extension
          point="org.eclipse.ui.commands">
       <category
-            name="Digital Forensic"
+            name="Suspect Search Category"
             id="com.dforensic.plugin.manal.commands.category">
       </category>
       <command
@@ -61,9 +57,22 @@
       <menuContribution
             locationURI="popup:org.eclipse.jdt.ui.PackageExplorer">
 		<command
-	    	commandId="com.dforensic.plugin.manal.commands.suspectSearch"
-            label="Search suspected API" style="push">
+        commandId="com.dforensic.plugin.manal.commands.suspectSearch"
+        label="Search suspected API"
+        style="push">
         </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="toolbar:org.eclipse.ui.main.toolbar">
+         <toolbar
+               id="com.dforensic.plugin.manal.toolbarSuspectSearch">
+            <command
+                  commandId="com.dforensic.plugin.manal.commands.suspectSearch"
+                  icon="icons/magnifier.jpg"
+                  style="push">
+            </command>
+         </toolbar>
       </menuContribution>
    </extension>
   
@@ -86,8 +95,8 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             class="com.dforensic.plugin.manal.perspective.SuspectAnalysisPerspective"
-            icon="icons/analysis.gif"
-            id="suspectiveManal"
+            icon="icons/analysis.jpg"
+            id="com.dforensic.plugin.manal.perspective.SuspectAnalysis"
             name="Suspect Analysis">
       </perspective>
    </extension>
@@ -95,7 +104,7 @@
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
-            targetID="suspectiveManal">
+            targetID="com.dforensic.plugin.manal.perspective.SuspectAnalysis">
         <!--  <actionSet id="org.eclipse.jdt.ui.JavaActionSet"/>
          <viewShortcut id="org.eclipse.jdt.ui.PackageExplorer"/> 
          <perspectiveShortcut id="org.eclipse.jdt.ui.JavaPerspective"/>  -->
@@ -106,12 +115,17 @@
                ratio = "0.85f"
                visible="true" />
         
-   		 <view id="org.eclipse.jdt.ui.PackageExplorer"
+        <view id="com.dforensic.plugin.manal.views.LeakSources"
+               relationship="bottom"
+               relative="org.eclipse.ui.editorss"
+               ratio = "0.75f"
+               visible="true" />       
+        
+   		<view id="org.eclipse.jdt.ui.PackageExplorer"
 			  relative="org.eclipse.ui.editorss"
               relationship="left"
               ratio="0.3f"
               visible="true"/> 
-      
       </perspectiveExtension>
    </extension>
    
