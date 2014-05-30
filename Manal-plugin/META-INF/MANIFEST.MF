@@ -23,4 +23,7 @@ Bundle-ClassPath: libs/axml-2.0.jar,
  libs/soot-infoflow-android.jar,
  libs/soot-infoflow.jar,
  libs/soot.jar,
+ files/flowdroid/,
+ tools/decompiler/,
  .
+Eclipse-BundleShape: dir
