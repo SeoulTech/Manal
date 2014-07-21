@@ -1,6 +1,11 @@
 Nikolay:
 	
-	1. Run APKtoJava and FlowDroid in separate threads.
+	===========Improvement==================
+	1. Check adnroid version
+	    - show warning dialog to choose manually or exit for download
+	    http://www.vogella.com/tutorials/EclipseDialogs/article.html
+	    https://android.googlesource.com/platform/sdk/+/master/eclipse/plugins/com.android.ide.eclipse.adt/src/com/android/ide/eclipse/adt/internal/preferences/AndroidPreferencePage.java
+	2. Run APKtoJava and FlowDroid in separate threads.
 	
 	===========new project wizard=======
 	http://www.ibm.com/developerworks/ru/library/os-eclipse-custwiz/

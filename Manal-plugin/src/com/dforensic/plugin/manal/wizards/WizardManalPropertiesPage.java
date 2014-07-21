@@ -40,6 +40,9 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.android.ide.eclipse.adt.AdtPlugin;
+import com.android.ide.eclipse.adt.internal.preferences.AdtPrefs;
+
 /**
  * The "New" properties wizard page allows setting the properties of the Manal
  * project for suspect analysis. That properties are a project name, a path to
@@ -159,6 +162,8 @@ public class WizardManalPropertiesPage extends WizardPage {
 
 		dialogChanged();
 		setControl(container);
+		
+		initControlValues();
 	}
 
 	// Refer to the following FAQ
@@ -254,6 +259,14 @@ public class WizardManalPropertiesPage extends WizardPage {
 	private void updateStatus(String message) {
 		setErrorMessage(message);
 		setPageComplete(message == null);
+	}
+	
+	/**
+	 * Fills initial values of UI elements.
+	 */
+	private void initControlValues() {
+		String path = AdtPrefs.getPrefs().getOsSdkFolder();
+		System.out.println(path);
 	}
 
 //	public String getProjectName() {
